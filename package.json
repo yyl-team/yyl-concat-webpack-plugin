@@ -1,0 +1,34 @@
+{
+  "name": "yyl-concat-webpack-plugin",
+  "version": "0.1.0",
+  "description": "concat webpack plugin",
+  "engines": {
+    "node": ">= 8.0.0"
+  },
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jackness1208/yyl-concat-webpack-plugin.git"
+  },
+  "keywords": [
+    "concat",
+    "webpack",
+    "plugin"
+  ],
+  "author": "jackness",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jackness1208/yyl-concat-webpack-plugin/issues"
+  },
+  "homepage": "https://github.com/jackness1208/yyl-concat-webpack-plugin#readme",
+  "devDependencies": {
+    "jest": "^24.9.0"
+  },
+  "dependencies": {
+    "concat-with-sourcemaps": "^1.1.0"
+  }
+}
