@@ -8,7 +8,9 @@
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "c-base:watch": "node ./test/commander.js watch --path ./test/case/base/",
+    "c-base:all": "node ./test/commander.js all --path ./test/case/base/"
   },
   "repository": {
     "type": "git",
@@ -26,7 +28,9 @@
   },
   "homepage": "https://github.com/jackness1208/yyl-concat-webpack-plugin#readme",
   "devDependencies": {
-    "jest": "^24.9.0"
+    "jest": "^24.9.0",
+    "yyl-os": "^0.10.2",
+    "yyl-util": "^2.3.7"
   },
   "dependencies": {
     "concat-with-sourcemaps": "^1.1.0"
