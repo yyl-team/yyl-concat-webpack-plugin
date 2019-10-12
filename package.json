@@ -8,7 +8,7 @@
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest ./test/jest/",
     "c-base:watch": "node ./test/commander.js watch --path ./test/case/base/",
     "c-base:all": "node ./test/commander.js all --path ./test/case/base/"
   },
