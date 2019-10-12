@@ -30,8 +30,27 @@ const config = {
   },
   dest: {
     basePath: '/'
-  }
+  },
+  concat: {}
 }
+
+config.concat[path.join(config.alias.jsDest, 'vendors.js')] = [
+  path.join(config.alias.srcRoot, 'js/a.js'),
+  path.join(config.alias.srcRoot, 'js/b.js')
+]
+
+config.concat[path.join(config.alias.jsDest, 'vendorsV2.js')] = [
+  path.join(config.alias.jsDest, 'vendors.js')
+]
+
+config.concat[path.join(config.alias.cssDest, 'vendors.css')] = [
+  path.join(config.alias.srcRoot, 'css/a.css'),
+  path.join(config.alias.srcRoot, 'css/b.css')
+]
+
+config.concat[path.join(config.alias.cssDest, 'vendorsV2.css')] = [
+  path.join(config.alias.cssDest, 'vendors.css')
+]
 // - setting
 
 const wConfig = {
@@ -60,7 +79,7 @@ const wConfig = {
   })(),
   output: {
     path: path.resolve(__dirname, config.alias.jsDest),
-    filename: '[name].js',
+    filename: '[name]-[hash:8].js',
     chunkFilename: 'async_component/[name]-[chunkhash:8].js',
     publicPath: util.path.join(
       config.dest.basePath,
@@ -149,7 +168,10 @@ const wConfig = {
   devtool: 'source-map',
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
-    new IPlugin()
+    new IPlugin({
+      fileMap: config.concat,
+      alias: config.alias
+    })
   ],
   optimization: {
     minimizer: [

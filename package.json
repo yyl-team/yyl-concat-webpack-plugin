@@ -33,6 +33,7 @@
     "yyl-util": "^2.3.7"
   },
   "dependencies": {
-    "concat-with-sourcemaps": "^1.1.0"
+    "concat-with-sourcemaps": "^1.1.0",
+    "tapable": "^1.1.3"
   }
 }
