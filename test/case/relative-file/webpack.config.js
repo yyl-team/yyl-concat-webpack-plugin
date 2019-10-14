@@ -32,31 +32,27 @@ const config = {
   dest: {
     basePath: '/'
   },
-  concat: {}
+  concat: {
+    './dist/assets/js/vendors.js': [
+      './src/js/a.js',
+      './src/js/b.js'
+    ],
+    './dist/assets/js/vendorsV2.js': [
+      './src/js/a.js',
+      './src/js/b.js',
+      './dist/assets/js/index.js'
+    ],
+    './dist/assets/css/vendors.css': [
+      './src/css/a.css',
+      './src/css/b.css'
+    ],
+    './dist/assets/css/vendorsV2.css': [
+      './src/css/a.css',
+      './src/css/b.css',
+      './dist/assets/css/index.css'
+    ]
+  }
 }
-
-config.concat[path.join(config.alias.jsDest, 'vendors.js')] = [
-  path.join(config.alias.srcRoot, 'js/a.js'),
-  path.join(config.alias.srcRoot, 'js/b.js')
-]
-
-config.concat[path.join(config.alias.jsDest, 'vendorsV2.js')] = [
-  path.join(config.alias.srcRoot, 'js/a.js'),
-  path.join(config.alias.srcRoot, 'js/b.js'),
-  path.join(config.alias.jsDest, 'index.js')
-]
-
-config.concat[path.join(config.alias.cssDest, 'vendors.css')] = [
-  path.join(config.alias.srcRoot, 'css/a.css'),
-  path.join(config.alias.srcRoot, 'css/b.css')
-]
-
-config.concat[path.join(config.alias.cssDest, 'vendorsV2.css')] = [
-  path.join(config.alias.srcRoot, 'css/a.css'),
-  path.join(config.alias.srcRoot, 'css/b.css'),
-  path.join(config.alias.cssDest, 'index.css')
-]
-
 // - setting
 
 const wConfig = {
@@ -193,7 +189,7 @@ const wConfig = {
     new IPlugin({
       fileMap: config.concat,
       fileName: '[name].[hash:16].[ext]',
-      uglify: true
+      uglify: false
     })
   ],
   optimization: {
