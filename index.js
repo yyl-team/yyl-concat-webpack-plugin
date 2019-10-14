@@ -77,7 +77,7 @@ class YylConcatWebpackPlugin {
         compilation.chunks.forEach((chunk) => {
           chunk.files.forEach((fName) => {
             if (chunk.name) {
-              const key = `${chunk.name}.${this.getFileType(fName)}`
+              const key = `${util.path.join(path.dirname(fName), chunk.name)}.${this.getFileType(fName)}`
               assetMap[key] = fName
             } else {
               assetMap[fName] = fName
@@ -136,6 +136,7 @@ class YylConcatWebpackPlugin {
                 )
               )
             } else {
+              console.log(assetMap, assetKey, srcPath)
               printError(`path not exists: ${srcPath}`)
             }
           })

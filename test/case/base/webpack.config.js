@@ -192,7 +192,8 @@ const wConfig = {
     }),
     new IPlugin({
       fileMap: config.concat,
-      alias: config.alias
+      fileName: '[name].[hash:16].[ext]',
+      uglify: true
     })
   ],
   optimization: {
