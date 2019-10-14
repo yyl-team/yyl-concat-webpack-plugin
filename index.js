@@ -1,44 +1,159 @@
+const path = require('path')
+const util = require('yyl-util')
+const Concat = require('concat-with-sourcemaps')
+const fs = require('fs')
+const createHash = require('crypto').createHash
+const UglifyJS = require('uglify-es')
+
+const PLUGIN_NAME = 'yylConcat'
+
+const printError = function(msg) {
+  throw `yyl-concat-webpack-plugin error: ${msg}`
+}
+
 class YylConcatWebpackPlugin {
-  constructor() {}
+  constructor(op) {
+    this.option = Object.assign({
+      fileMap: {},
+      fileName: '[name]-[hash:8].[ext]',
+      uglify: false
+    }, op)
+  }
+  getFileType(str) {
+    str = str.replace(/\?.*/, '')
+    const split = str.split('.')
+    let ext = split[split.length - 1]
+    if (ext === 'map' && split.length > 2) {
+      ext = `${split[split.length - 2]}.${split[split.length - 1]}`
+    }
+    return ext
+  }
+  getFileName(name, cnt) {
+    const { fileName } = this.option
+
+    const REG_HASH = /\[hash:(\d+)\]/g
+    const REG_NAME = /\[name\]/g
+    const REG_EXT = /\[ext\]/g
+
+    const dirname = path.dirname(name)
+    const basename = path.basename(name)
+    const ext = path.extname(basename).replace(/^\./, '')
+    const iName = basename.slice(0, basename.length - (ext.length > 0 ? ext.length + 1 : 0))
+
+    let hash = ''
+    if (fileName.match(REG_HASH)) {
+      let hashLen = 0
+      fileName.replace(REG_HASH, (str, $1) => {
+        hashLen = +$1
+        hash = createHash('md5').update(cnt.toString()).digest('hex').slice(0, hashLen)
+      })
+    }
+    const r = fileName
+      .replace(REG_HASH, hash)
+      .replace(REG_NAME, iName)
+      .replace(REG_EXT, ext)
+
+    return util.path.join(dirname, r)
+  }
   apply(compiler) {
-    compiler.hooks.emit.tapAsync(
-      'yylConcat',
-      (compilation, done) => {
-        console.log(compilation.chunks.length)
+    const { output, uglify } = compiler.options
+    const { fileMap } = this.option
+
+    const moduleAssets = {}
+
+    compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
+      compilation.hooks.moduleAsset.tap(PLUGIN_NAME, (module, file) => {
+        if (module.userRequest) {
+          moduleAssets[file] = path.join(path.dirname(file), path.basename(module.userRequest))
+        }
+      })
+    })
+
+    compiler.hooks.emit.tap(
+      PLUGIN_NAME,
+      (compilation) => {
+        // + init assetMap
+        const assetMap = {}
         compilation.chunks.forEach((chunk) => {
-          console.log(chunk.id, chunk.files)
+          chunk.files.forEach((fName) => {
+            if (chunk.name) {
+              const key = `${chunk.name}.${this.getFileType(fName)}`
+              assetMap[key] = fName
+            } else {
+              assetMap[fName] = fName
+            }
+          })
         })
 
-
-
-        Object.keys(compilation.assets).forEach((key) => {
-          let cnt = compilation.assets[key].source()
-          if (typeof cnt === 'string') {
-            // cnt = cnt.replace(/(\w+)\.default\(/g, '$1[\'default\'](');
-            // console.log('===', key)
-            compilation.assets[key] = {
-              source() {
-                return cnt
-              },
-              size() {
-                return cnt.length
-              }
-            }
+        const stats = compilation.getStats().toJson({
+          all: false,
+          assets: true,
+          cachedAssets: true
+        })
+        stats.assets.forEach((asset) => {
+          const name = moduleAssets[asset.name]
+          if (name) {
+            assetMap[util.path.join(name)] = asset.name
           }
         })
-        done()
+        // - init assetMap
 
-        // compilation.hooks.emit.tapAsync('yylConcat', () => {
-        //   console.log(compilation)
-        //   // compilation.chunks.forEach((chunk) => {
-        //   //   console.log('chunk.files ===', chunk.files)
-        //   //   chunk.files.forEach((filename) => {
-        //   //     console.log('===', filename)
-        //   //   })
-        //   // })
-        //   // console.log(compilation.chunks)
-          
-        // })
+        // + concat
+        const formatSource = function (cnt, ext) {
+          if (!uglify) {
+            return cnt
+          }
+          if (ext === '.js') {
+            return UglifyJS(cnt)
+          } else {
+            return cnt
+          }
+        }
+        Object.keys(fileMap).forEach((targetPath) => {
+          const assetName = util.path.relative(output.path, targetPath)
+          const iConcat = new Concat(true, targetPath, '\n')
+          fileMap[targetPath].forEach((srcPath) => {
+            const assetKey = util.path.relative(output.path, srcPath)
+
+            if (path.extname(assetKey) == '.js') {
+              iConcat.add(null, `;/* ${path.basename(assetKey)} */`)
+            } else {
+              iConcat.add(null, `/* ${path.basename(assetKey)} */`)
+            }
+
+            if (assetMap[assetKey]) {
+              iConcat.add(
+                assetMap[assetKey],
+                formatSource(
+                  compilation.assets[assetMap[assetKey]].source()
+                )
+              )
+            } else if (fs.existsSync(srcPath)) {
+              iConcat.add(
+                srcPath,
+                formatSource(
+                  fs.readFileSync(srcPath).toString()
+                )
+              )
+            } else {
+              printError(`path not exists: ${srcPath}`)
+            }
+          })
+          const finalName = this.getFileName(assetName, iConcat.content)
+
+          compilation.assets[finalName] = {
+            source() {
+              return iConcat.content
+            },
+            size() {
+              return iConcat.content.length
+            }
+          }
+          compilation.hooks.moduleAsset.call({
+            userRequest: util.path.join(output.path, assetName)
+          }, util.path.join(output.path, finalName))
+        })
+        // - concat
       }
     )
   }

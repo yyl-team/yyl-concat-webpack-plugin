@@ -5,6 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const extFs = require('yyl-fs')
 const UglifyjsWebpackPlugin = require('uglifyjs-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const webpack = require('webpack')
 const extOs = require('yyl-os')
 
@@ -40,7 +41,9 @@ config.concat[path.join(config.alias.jsDest, 'vendors.js')] = [
 ]
 
 config.concat[path.join(config.alias.jsDest, 'vendorsV2.js')] = [
-  path.join(config.alias.jsDest, 'vendors.js')
+  path.join(config.alias.srcRoot, 'js/a.js'),
+  path.join(config.alias.srcRoot, 'js/b.js'),
+  path.join(config.alias.jsDest, 'index.js')
 ]
 
 config.concat[path.join(config.alias.cssDest, 'vendors.css')] = [
@@ -49,8 +52,11 @@ config.concat[path.join(config.alias.cssDest, 'vendors.css')] = [
 ]
 
 config.concat[path.join(config.alias.cssDest, 'vendorsV2.css')] = [
-  path.join(config.alias.cssDest, 'vendors.css')
+  path.join(config.alias.srcRoot, 'css/a.css'),
+  path.join(config.alias.srcRoot, 'css/b.css'),
+  path.join(config.alias.cssDest, 'index.css')
 ]
+
 // - setting
 
 const wConfig = {
@@ -129,15 +135,15 @@ const wConfig = {
       use: {
         loader: 'url-loader',
         options: {
-          limit: 3000,
-          name: '[name].[ext]',
+          limit: 1,
+          name: '[name]-[hash:8].[ext]',
           chunkFilename: 'async_component/[name]-[chunkhash:8].js',
           outputPath: path.relative(
             config.alias.jsDest,
             config.alias.imagesDest
           ),
           publicPath: (function () {
-            let r = path.join(
+            let r = util.path.join(
               config.dest.basePath,
               path.relative(
                 config.alias.root,
@@ -151,7 +157,12 @@ const wConfig = {
       }
     }, {
       test: /\.css$/,
-      use: ['style-loader', 'css-loader']
+      use: [{
+        loader: MiniCssExtractPlugin.loader,
+        options: {}
+      }, {
+        loader: 'css-loader'
+      }]
     }]
   },
   resolveLoader: {
@@ -168,6 +179,17 @@ const wConfig = {
   devtool: 'source-map',
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
+    // 样式分离插件
+    new MiniCssExtractPlugin({
+      filename: util.path.join(
+        path.relative(
+          config.alias.jsDest,
+          path.join(config.alias.cssDest, '[name]-[chunkhash:8].css')
+        )
+      ),
+      chunkFilename: '[name]-[chunkhash:8].css',
+      allChunks: true
+    }),
     new IPlugin({
       fileMap: config.concat,
       alias: config.alias

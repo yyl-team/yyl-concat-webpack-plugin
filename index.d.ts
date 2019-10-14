@@ -3,6 +3,7 @@ declare class YylConcatWebpackPlugin {
 }
 interface YylConcatWebpackPluginOptions {
   fileMap: { [target: string]: string[]},
-  alias: { [key: string]: string}
+  fileName: string,
+  uglify: boolean
 }
 export = YylConcatWebpackPlugin
