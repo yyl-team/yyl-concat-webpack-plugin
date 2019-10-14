@@ -10,7 +10,9 @@
   "scripts": {
     "test": "jest ./test/jest/",
     "c-base:watch": "node ./test/commander.js watch --path ./test/case/base/",
-    "c-base:all": "node ./test/commander.js all --path ./test/case/base/"
+    "c-base:all": "node ./test/commander.js all --path ./test/case/base/",
+    "c-relative-file:watch": "node ./test/commander.js watch --path ./test/case/relative-file/",
+    "c-relative-file:all": "node ./test/commander.js all --path ./test/case/relative-file/"
   },
   "repository": {
     "type": "git",
@@ -29,12 +31,13 @@
   "homepage": "https://github.com/jackness1208/yyl-concat-webpack-plugin#readme",
   "devDependencies": {
     "jest": "^24.9.0",
+    "webpack": "^4.41.1",
+    "yyl-fs": "^0.3.3",
     "yyl-os": "^0.10.2",
     "yyl-util": "^2.3.7"
   },
   "dependencies": {
-    "concat-with-sourcemaps": "^1.1.0",
-    "tapable": "^1.1.3",
-    "uglify-es": "^3.3.9"
+    "concat-with-sourcemaps": "1.1.0",
+    "uglify-es": "3.3.9"
   }
 }

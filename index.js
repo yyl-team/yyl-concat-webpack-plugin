@@ -56,10 +56,11 @@ class YylConcatWebpackPlugin {
     return util.path.join(dirname, r)
   }
   apply(compiler) {
-    const { output, uglify } = compiler.options
-    const { fileMap } = this.option
+    const { output, context } = compiler.options
+    const { fileMap, uglify } = this.option
 
     const moduleAssets = {}
+
 
     compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
       compilation.hooks.moduleAsset.tap(PLUGIN_NAME, (module, file) => {
@@ -104,15 +105,29 @@ class YylConcatWebpackPlugin {
             return cnt
           }
           if (ext === '.js') {
-            return UglifyJS(cnt)
+            const result = UglifyJS.minify(cnt)
+            if (result.error) {
+              printError(result.error)
+            } else {
+              return result.code
+            }
           } else {
             return cnt
           }
         }
-        Object.keys(fileMap).forEach((targetPath) => {
+        // fileMap 格式化
+        const rMap = {}
+        Object.keys(fileMap).forEach((key) => {
+          rMap[path.resolve(context, key)] = fileMap[key].map((iPath) => {
+            return path.resolve(context, iPath)
+          })
+        })
+
+
+        Object.keys(rMap).forEach((targetPath) => {
           const assetName = util.path.relative(output.path, targetPath)
           const iConcat = new Concat(true, targetPath, '\n')
-          fileMap[targetPath].forEach((srcPath) => {
+          rMap[targetPath].forEach((srcPath) => {
             const assetKey = util.path.relative(output.path, srcPath)
 
             if (path.extname(assetKey) == '.js') {
@@ -125,18 +140,19 @@ class YylConcatWebpackPlugin {
               iConcat.add(
                 assetMap[assetKey],
                 formatSource(
-                  compilation.assets[assetMap[assetKey]].source()
+                  compilation.assets[assetMap[assetKey]].source(),
+                  path.extname(assetKey)
                 )
               )
             } else if (fs.existsSync(srcPath)) {
               iConcat.add(
                 srcPath,
                 formatSource(
-                  fs.readFileSync(srcPath).toString()
+                  fs.readFileSync(srcPath).toString(),
+                  path.extname(assetKey)
                 )
               )
             } else {
-              console.log(assetMap, assetKey, srcPath)
               printError(`path not exists: ${srcPath}`)
             }
           })
