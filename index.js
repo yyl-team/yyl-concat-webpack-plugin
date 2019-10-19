@@ -4,6 +4,7 @@ const Concat = require('concat-with-sourcemaps')
 const fs = require('fs')
 const createHash = require('crypto').createHash
 const UglifyJS = require('uglify-es')
+const { SyncHook } = require('tapable')
 
 const PLUGIN_NAME = 'yylConcat'
 
@@ -18,6 +19,12 @@ class YylConcatWebpackPlugin {
       fileName: '[name]-[hash:8].[ext]',
       uglify: false
     }, op)
+    this.createHooks()
+  }
+  createHooks() {
+    this.hooks = {
+      beforeRun: new SyncHook(['args'])
+    }
   }
   getFileType(str) {
     str = str.replace(/\?.*/, '')
@@ -70,9 +77,9 @@ class YylConcatWebpackPlugin {
       })
     })
 
-    compiler.hooks.emit.tap(
+    compiler.hooks.emit.tapAsync(
       PLUGIN_NAME,
-      (compilation) => {
+      async (compilation, done) => {
         // + init assetMap
         const assetMap = {}
         compilation.chunks.forEach((chunk) => {
@@ -100,19 +107,20 @@ class YylConcatWebpackPlugin {
         // - init assetMap
 
         // + concat
-        const formatSource = function (cnt, ext) {
+        const formatSource = function (cnt, op) {
           if (!uglify) {
             return cnt
           }
+          const ext = path.extname(op.from)
           if (ext === '.js') {
             const result = UglifyJS.minify(cnt)
             if (result.error) {
               printError(result.error)
             } else {
-              return result.code
+              return Promise.resolve(result.code)
             }
           } else {
-            return cnt
+            return Promise.resolve(cnt)
           }
         }
         // fileMap 格式化
@@ -124,10 +132,10 @@ class YylConcatWebpackPlugin {
         })
 
 
-        Object.keys(rMap).forEach((targetPath) => {
+        await util.forEach(Object.keys(rMap), async (targetPath) => {
           const assetName = util.path.relative(output.path, targetPath)
           const iConcat = new Concat(true, targetPath, '\n')
-          rMap[targetPath].forEach((srcPath) => {
+          await util.forEach(rMap[targetPath], async (srcPath) => {
             const assetKey = util.path.relative(output.path, srcPath)
 
             if (path.extname(assetKey) == '.js') {
@@ -139,17 +147,23 @@ class YylConcatWebpackPlugin {
             if (assetMap[assetKey]) {
               iConcat.add(
                 assetMap[assetKey],
-                formatSource(
+                await formatSource(
                   compilation.assets[assetMap[assetKey]].source(),
-                  path.extname(assetKey)
+                  {
+                    from: srcPath,
+                    to: targetPath
+                  }
                 )
               )
             } else if (fs.existsSync(srcPath)) {
               iConcat.add(
                 srcPath,
-                formatSource(
+                await formatSource(
                   fs.readFileSync(srcPath).toString(),
-                  path.extname(assetKey)
+                  {
+                    from: srcPath,
+                    to: targetPath
+                  }
                 )
               )
             } else {
@@ -171,6 +185,7 @@ class YylConcatWebpackPlugin {
           }, util.path.join(output.path, finalName))
         })
         // - concat
+        done()
       }
     )
   }
