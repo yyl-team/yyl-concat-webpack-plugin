@@ -21,6 +21,26 @@ class YylConcatWebpackPlugin {
     }, op)
     this.createHooks()
   }
+  formatSource (cnt, op) {
+    const { uglify } = this
+
+    const r = this.hooks.beforeRun.call(op.from, op.to, cnt)
+    console.log('hook.call result', r)
+    if (!uglify) {
+      return cnt
+    }
+    const ext = path.extname(op.from)
+    if (ext === '.js') {
+      const result = UglifyJS.minify(cnt)
+      if (result.error) {
+        printError(result.error)
+      } else {
+        return Promise.resolve(result.code)
+      }
+    } else {
+      return Promise.resolve(cnt)
+    }
+  }
   createHooks() {
     this.hooks = {
       beforeRun: new SyncHook(['args'])
@@ -107,22 +127,7 @@ class YylConcatWebpackPlugin {
         // - init assetMap
 
         // + concat
-        const formatSource = function (cnt, op) {
-          if (!uglify) {
-            return cnt
-          }
-          const ext = path.extname(op.from)
-          if (ext === '.js') {
-            const result = UglifyJS.minify(cnt)
-            if (result.error) {
-              printError(result.error)
-            } else {
-              return Promise.resolve(result.code)
-            }
-          } else {
-            return Promise.resolve(cnt)
-          }
-        }
+
         // fileMap 格式化
         const rMap = {}
         Object.keys(fileMap).forEach((key) => {
@@ -147,7 +152,7 @@ class YylConcatWebpackPlugin {
             if (assetMap[assetKey]) {
               iConcat.add(
                 assetMap[assetKey],
-                await formatSource(
+                await this.formatSource(
                   compilation.assets[assetMap[assetKey]].source(),
                   {
                     from: srcPath,
@@ -158,7 +163,7 @@ class YylConcatWebpackPlugin {
             } else if (fs.existsSync(srcPath)) {
               iConcat.add(
                 srcPath,
-                await formatSource(
+                await this.formatSource(
                   fs.readFileSync(srcPath).toString(),
                   {
                     from: srcPath,
