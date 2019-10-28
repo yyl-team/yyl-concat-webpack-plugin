@@ -38,11 +38,11 @@ class ExtPlugin {
       compiler.hooks.compilation.tap(IPlugin.getName(), (compilation) => {
         IPlugin.getHooks(compilation).beforeConcat.tapAsync(PLUGIN_NAME, (obj, done) => {
           console.log('hooks.beforeConcat(obj, done)', 'obj:', obj)
-          done(null, obj.resource)
+          done(null, obj)
         })
         IPlugin.getHooks(compilation).afterConcat.tapAsync(PLUGIN_NAME, (obj, done) => {
           console.log('hooks.afterConcat(obj, done)', 'obj:', obj)
-          done(null, obj.resource)
+          done(null, obj)
         })
       })
     }

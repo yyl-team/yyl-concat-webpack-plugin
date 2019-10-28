@@ -4,7 +4,7 @@ interface Hooks {
   beforeConcat: AsyncSeriesWaterfallHook<{
     src: string,
     dist: string,
-    source: string
+    source: Buffer
   }>
   afterConcat: AsyncSeriesWaterfallHook<{
     srcs: string[],

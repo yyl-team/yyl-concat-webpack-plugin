@@ -9,12 +9,12 @@ class ExtPlugin {
       IPlugin.getHooks(compilation).beforeConcat.tapAsync(PLUGIN_NAME, async (obj, done) => {
         await util.waitFor(10)
         console.log('hooks.beforeConcat(obj, done)', 'obj:', obj)
-        done(null, obj.resource)
+        done(null, obj)
       })
       IPlugin.getHooks(compilation).afterConcat.tapAsync(PLUGIN_NAME, async (obj, done) => {
         await util.waitFor(10)
         console.log('hooks.afterConcat(obj, done)', 'obj:', obj)
-        done(null, obj.resource)
+        done(null, obj)
       })
     })
   }

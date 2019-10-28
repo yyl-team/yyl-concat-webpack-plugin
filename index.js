@@ -4,7 +4,6 @@ const Concat = require('concat-with-sourcemaps')
 const fs = require('fs')
 const createHash = require('crypto').createHash
 const UglifyJS = require('uglify-es')
-const { SyncHook } = require('tapable')
 
 const { getHooks } = require('./lib/hooks')
 
@@ -117,7 +116,7 @@ class YylConcatWebpackPlugin {
             return cnt
           }
           if (ext === '.js') {
-            const result = UglifyJS.minify(cnt)
+            const result = UglifyJS.minify(cnt.toString())
             if (result.error) {
               printError(result.error)
             } else {
@@ -148,7 +147,7 @@ class YylConcatWebpackPlugin {
               iConcat.add(null, `/* ${path.basename(assetKey)} */`)
             }
 
-            const fileInfo = {
+            let fileInfo = {
               src: '',
               target: targetPath,
               source: ''
@@ -156,49 +155,42 @@ class YylConcatWebpackPlugin {
 
             if (assetMap[assetKey]) {
               fileInfo.src = path.resolve(output.path, assetMap[assetKey])
-              fileInfo.source = compilation.assets[assetMap[assetKey]].source()
+              fileInfo.source = Buffer.from(compilation.assets[assetMap[assetKey]].source(), 'utf-8')
             } else if (fs.existsSync(srcPath)) {
               fileInfo.src = srcPath
-              fileInfo.source = fs.readFileSync(srcPath).toString()
+              fileInfo.source = fs.readFileSync(srcPath)
             } else {
               return printError(`path not exists: ${srcPath}`)
             }
 
             // + hooks.beforeConcat
-            let bcResult = await iHooks.beforeConcat.promise(
+            fileInfo = await iHooks.beforeConcat.promise(
               fileInfo
             )
-            if (bcResult === fileInfo) {
-              bcResult = fileInfo.source
-            }
-
+            // - hooks.beforeConcat
             iConcat.add(
               fileInfo.src,
-              formatSource(bcResult, path.extname(fileInfo.src))
+              formatSource(fileInfo.source, path.extname(fileInfo.src))
             )
-            // - hooks.beforeConcat
           })
           const finalName = this.getFileName(assetName, iConcat.content)
 
 
           // + hooks.afterConcat
-          const afterOption = {
+          let afterOption = {
             dist: targetPath,
             srcs: rMap[targetPath],
             source: iConcat.content
           }
 
-          let acResult = await iHooks.afterConcat.promise(afterOption)
-          if (acResult === afterOption) {
-            acResult = iConcat.content
-          }
+          afterOption = await iHooks.afterConcat.promise(afterOption)
 
           compilation.assets[finalName] = {
             source() {
-              return acResult
+              return afterOption.source
             },
             size() {
-              return acResult.length
+              return afterOption.source.length
             }
           }
           // - hooks.afterConcat
