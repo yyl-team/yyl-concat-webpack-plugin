@@ -22,7 +22,6 @@ class YylConcatWebpackPlugin {
       fileName: '[name]-[hash:8].[ext]',
       uglify: false
     }, op)
-    this.createHooks()
   }
   static getName() {
     return PLUGIN_NAME

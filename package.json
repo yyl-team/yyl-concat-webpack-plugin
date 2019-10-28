@@ -18,9 +18,7 @@
     "cha": "node ./test/commander.js all --path ./test/case/hooks/",
     "che": "node ./test/commander.js watch --path ./test/case/hooks/",
     "c-relative-file:watch": "node ./test/commander.js watch --path ./test/case/relative-file/",
-    "c-relative-file:all": "node ./test/commander.js all --path ./test/case/relative-file/",
-    "cba": "node ./test/commander.js all --path ./test/case/base/",
-    "cbw": "node ./test/commander.js watch --path ./test/case/base/"
+    "c-relative-file:all": "node ./test/commander.js all --path ./test/case/relative-file/"
   },
   "repository": {
     "type": "git",
