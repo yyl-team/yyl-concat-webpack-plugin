@@ -4,6 +4,10 @@ const Concat = require('concat-with-sourcemaps')
 const fs = require('fs')
 const createHash = require('crypto').createHash
 const UglifyJS = require('uglify-es')
+const { SyncHook } = require('tapable')
+
+const { getHooks } = require('./lib/hooks')
+
 
 const PLUGIN_NAME = 'yylConcat'
 
@@ -18,6 +22,12 @@ class YylConcatWebpackPlugin {
       fileName: '[name]-[hash:8].[ext]',
       uglify: false
     }, op)
+  }
+  static getName() {
+    return PLUGIN_NAME
+  }
+  static getHooks(compilation) {
+    return getHooks(compilation)
   }
   getFileType(str) {
     str = str.replace(/\?.*/, '')
@@ -70,9 +80,9 @@ class YylConcatWebpackPlugin {
       })
     })
 
-    compiler.hooks.emit.tap(
+    compiler.hooks.emit.tapAsync(
       PLUGIN_NAME,
-      (compilation) => {
+      async (compilation, done) => {
         // + init assetMap
         const assetMap = {}
         compilation.chunks.forEach((chunk) => {
@@ -100,6 +110,8 @@ class YylConcatWebpackPlugin {
         // - init assetMap
 
         // + concat
+        const iHooks = getHooks(compilation)
+
         const formatSource = function (cnt, ext) {
           if (!uglify) {
             return cnt
@@ -124,10 +136,10 @@ class YylConcatWebpackPlugin {
         })
 
 
-        Object.keys(rMap).forEach((targetPath) => {
+        await util.forEach(Object.keys(rMap), async (targetPath) => {
           const assetName = util.path.relative(output.path, targetPath)
           const iConcat = new Concat(true, targetPath, '\n')
-          rMap[targetPath].forEach((srcPath) => {
+          await util.forEach(rMap[targetPath], async (srcPath) => {
             const assetKey = util.path.relative(output.path, srcPath)
 
             if (path.extname(assetKey) == '.js') {
@@ -136,41 +148,67 @@ class YylConcatWebpackPlugin {
               iConcat.add(null, `/* ${path.basename(assetKey)} */`)
             }
 
-            if (assetMap[assetKey]) {
-              iConcat.add(
-                assetMap[assetKey],
-                formatSource(
-                  compilation.assets[assetMap[assetKey]].source(),
-                  path.extname(assetKey)
-                )
-              )
-            } else if (fs.existsSync(srcPath)) {
-              iConcat.add(
-                srcPath,
-                formatSource(
-                  fs.readFileSync(srcPath).toString(),
-                  path.extname(assetKey)
-                )
-              )
-            } else {
-              printError(`path not exists: ${srcPath}`)
+            const fileInfo = {
+              src: '',
+              target: targetPath,
+              source: ''
             }
+
+            if (assetMap[assetKey]) {
+              fileInfo.src = path.resolve(output.path, assetMap[assetKey])
+              fileInfo.source = compilation.assets[assetMap[assetKey]].source()
+            } else if (fs.existsSync(srcPath)) {
+              fileInfo.src = srcPath
+              fileInfo.source = fs.readFileSync(srcPath).toString()
+            } else {
+              return printError(`path not exists: ${srcPath}`)
+            }
+
+            // + hooks.beforeConcat
+            let bcResult = await iHooks.beforeConcat.promise(
+              fileInfo
+            )
+            if (bcResult === fileInfo) {
+              bcResult = fileInfo.source
+            }
+
+            iConcat.add(
+              fileInfo.src,
+              formatSource(bcResult, path.extname(fileInfo.src))
+            )
+            // - hooks.beforeConcat
           })
           const finalName = this.getFileName(assetName, iConcat.content)
 
+
+          // + hooks.afterConcat
+          const afterOption = {
+            dist: targetPath,
+            srcs: rMap[targetPath],
+            source: iConcat.content
+          }
+
+          let acResult = await iHooks.afterConcat.promise(afterOption)
+          if (acResult === afterOption) {
+            acResult = iConcat.content
+          }
+
           compilation.assets[finalName] = {
             source() {
-              return iConcat.content
+              return acResult
             },
             size() {
-              return iConcat.content.length
+              return acResult.length
             }
           }
+          // - hooks.afterConcat
+
           compilation.hooks.moduleAsset.call({
             userRequest: util.path.join(output.path, assetName)
           }, util.path.join(output.path, finalName))
         })
         // - concat
+        done()
       }
     )
   }

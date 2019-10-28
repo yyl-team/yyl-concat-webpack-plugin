@@ -10,6 +10,7 @@ const webpack = require('webpack')
 const extOs = require('yyl-os')
 
 const IPlugin = require('../../../index')
+const ExtPlugin = require('./ext-plugin')
 
 const util = require('yyl-util')
 
@@ -58,27 +59,6 @@ config.concat[path.join(config.alias.cssDest, 'vendorsV2.css')] = [
 ]
 
 // - setting
-// + iPluginOption
-const iPluginOption = {
-  fileMap: config.concat,
-  fileName: '[name].[hash:16].[ext]',
-  uglify: true
-}
-// - iPluginOption
-// + hookCheck
-class HookCheck {
-  apply (compiler) {
-    compiler.hooks.compilation.tap('HookCheck', (compilation) => {
-      if (compilation.hooks.yylConcatBeforeRun) {
-        compilation.hooks.yylConcatBeforeRun.tap((a, b, c) => {
-          console.log('callback', a, b, c)
-          return c
-        })
-      }
-    })
-  }
-}
-// - hookCheck
 
 const wConfig = {
   mode: 'development',
@@ -211,8 +191,12 @@ const wConfig = {
       chunkFilename: '[name]-[chunkhash:8].css',
       allChunks: true
     }),
-    new IPlugin(iPluginOption),
-    new HookCheck()
+    new IPlugin({
+      fileMap: config.concat,
+      fileName: '[name].[hash:16].[ext]',
+      uglify: true
+    }),
+    new ExtPlugin()
   ],
   optimization: {
     minimizer: [
