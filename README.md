@@ -34,7 +34,8 @@ try {
 const PLUGIN_NAME = 'your_plugin'
 class ExtPlugin {
   apply (compiler) {
-    if (YylConcatWebpackPlugin) {
+    const IPlugin = YylConcatWebpackPlugin
+    if (IPlugin) {
       compiler.hooks.compilation.tap(IPlugin.getName(), (compilation) => {
         IPlugin.getHooks(compilation).beforeConcat.tapAsync(PLUGIN_NAME, (obj, done) => {
           console.log('hooks.beforeConcat(obj, done)', 'obj:', obj)
