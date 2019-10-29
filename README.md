@@ -25,9 +25,9 @@ const wConfig = {
 let YylConcatWebpackPlugin
 try {
   YylConcatWebpackPlugin = require('yyl-concat-webpack-plugin')
-} catch (er) {
+} catch (e) {
   if (!(e instanceof Error) || e.code !== 'MODULE_NOT_FOUND') {
-    throw e;
+    throw e
   }
 }
 
