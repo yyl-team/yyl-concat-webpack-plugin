@@ -79,7 +79,7 @@ class YylConcatWebpackPlugin {
   }
   apply(compiler) {
     const { output, context } = compiler.options
-    const { fileMap } = this.option
+    const { fileMap, uglify } = this.option
 
     const moduleAssets = {}
 
