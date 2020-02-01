@@ -17,7 +17,7 @@ const printError = function(msg) {
 class YylConcatWebpackPlugin {
   constructor(op) {
     const { fileMap, basePath, uglify, fileName } = op
-    let iFileMap
+    let iFileMap = {}
     if (basePath && fileMap) {
       Object.keys(fileMap).forEach((key) => {
         iFileMap[path.resolve(basePath, key)] = fileMap[key].map(
