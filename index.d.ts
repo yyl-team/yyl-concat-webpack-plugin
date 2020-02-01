@@ -21,8 +21,9 @@ declare class YylConcatWebpackPlugin {
 
 
 interface YylConcatWebpackPluginOptions {
-  fileMap: { [target: string]: string[]},
-  fileName: string,
-  uglify: boolean
+  fileMap: { [target: string]: string[] }
+  fileName?: string
+  uglify?: boolean
+  basePath?: string
 }
 export = YylConcatWebpackPlugin

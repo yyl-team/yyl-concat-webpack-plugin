@@ -16,11 +16,24 @@ const printError = function(msg) {
 
 class YylConcatWebpackPlugin {
   constructor(op) {
-    this.option = Object.assign({
-      fileMap: {},
-      fileName: '[name]-[hash:8].[ext]',
-      uglify: false
-    }, op)
+    const { fileMap, basePath, uglify, fileName } = op
+    let iFileMap
+    if (basePath && fileMap) {
+      Object.keys(fileMap).forEach((key) => {
+        iFileMap[path.resolve(basePath, key)] = fileMap[key].map(
+          (iPath) => path.resolve(basePath, iPath)
+        )
+      })
+    } else {
+      iFileMap = fileMap || {}
+    }
+    this.option = {
+      fileMap: iFileMap,
+      fileName: fileName || '[name]-[hash:8].[ext]',
+      basePath: basePath || process.cwd(),
+      uglify: uglify || false
+    }
+    this.createHooks()
   }
   static getName() {
     return PLUGIN_NAME
@@ -66,7 +79,7 @@ class YylConcatWebpackPlugin {
   }
   apply(compiler) {
     const { output, context } = compiler.options
-    const { fileMap, uglify } = this.option
+    const { fileMap } = this.option
 
     const moduleAssets = {}
 

@@ -1,6 +1,7 @@
 # yyl-concat-webpack-plugin
 
 ## USAGE
+### plugin
 ```javascript
 const YylConcatWebpackPlugin = require('yyl-concat-webpack-plugin')
 
@@ -19,6 +20,49 @@ const wConfig = {
   ]
 }
 ```
+### hooks
+#### example
+```javascript
+let YylCopyWebpackPlugin
+try {
+  YylCopyWebpackPlugin = require('yyl-copy-webpack-plugin')
+} catch (er) {
+  if (!(er instanceof Error) || er.code !== 'MODULE_NOT_FOUND') {
+    printError(er)
+  }
+}
+class YourPlugin {
+  render(src, source) {
+    return source
+  }
+  apply(compiler) {
+    if (YylCopyWebpackPlugin) {
+      compiler.hooks.compilation.tap(YylCopyWebpackPlugin.getName(), (compilation) => {
+        // + beforeCopy
+        YylCopyWebpackPlugin.getHooks(compilation).beforeCopy.tapAsync(PLUGIN_NAME, (obj, done) => {
+          obj.source = this.render({
+            src: obj.src,
+            source: obj.source
+          })
+          done(null, obj)
+        })
+        // - beforeCopy
+
+        //+ afterCopy
+        YylCopyWebpackPlugin.getHooks(compilation).afterCopy.tapAsync(PLUGIN_NAME, (obj, done) => {
+          obj.source = this.render({
+            src: obj.src,
+            source: obj.source
+          })
+          done(null, obj)
+        })
+        //- afterCopy
+      })
+    }
+  }
+}
+```
+
 
 ## hooks
 ```javascript
