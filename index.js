@@ -33,7 +33,6 @@ class YylConcatWebpackPlugin {
       basePath: basePath || process.cwd(),
       uglify: uglify || false
     }
-    this.createHooks()
   }
   static getName() {
     return PLUGIN_NAME
