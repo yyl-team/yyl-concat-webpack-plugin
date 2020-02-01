@@ -30,7 +30,6 @@ class YylConcatWebpackPlugin {
     this.option = {
       fileMap: iFileMap,
       fileName: fileName || '[name]-[hash:8].[ext]',
-      basePath: basePath || process.cwd(),
       uglify: uglify || false
     }
   }
@@ -141,9 +140,9 @@ class YylConcatWebpackPlugin {
         // fileMap 格式化
         const rMap = {}
         Object.keys(fileMap).forEach((key) => {
-          rMap[path.resolve(context, key)] = fileMap[key].map((iPath) => {
-            return path.resolve(context, iPath)
-          })
+          rMap[path.resolve(context, key)] = fileMap[key].map(
+            (iPath) => path.resolve(context, iPath)
+          )
         })
 
 
