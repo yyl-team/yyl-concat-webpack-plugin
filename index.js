@@ -207,8 +207,8 @@ class YylConcatWebpackPlugin {
           // - hooks.afterConcat
 
           compilation.hooks.moduleAsset.call({
-            userRequest: util.path.join(output.path, assetName)
-          }, util.path.join(output.path, finalName))
+            userRequest: assetName
+          }, finalName)
         })
         // - concat
         done()
