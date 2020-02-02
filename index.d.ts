@@ -14,13 +14,14 @@ interface Hooks {
 }
 
 declare class YylConcatWebpackPlugin {
-  constructor(op: YylConcatWebpackPluginOptions)
+  constructor(op: YylConcatWebpackPluginOption)
   static getHooks(compilation: any): Hooks
+  static getName(): string
 }
 
 
 
-interface YylConcatWebpackPluginOptions {
+interface YylConcatWebpackPluginOption {
   fileMap: { [target: string]: string[] }
   fileName?: string
   uglify?: boolean

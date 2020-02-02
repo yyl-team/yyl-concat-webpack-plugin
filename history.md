@@ -1,6 +1,8 @@
 # 历史版本
-## 0.1.1(*)
+## 0.2.2(2020-02-03)
 * feat: 配合 yyl-sugar-webpack-plugin 进行调整
+* feat: 补充 readme
+
 ## 0.2.1(2019-10-28)
 * feat: 调整 hooks 回调返回值
 * feat: 补充 test

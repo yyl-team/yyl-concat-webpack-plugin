@@ -17,7 +17,7 @@ const printError = function(msg) {
 class YylConcatWebpackPlugin {
   constructor(op) {
     const { fileMap, basePath, uglify, fileName } = op
-    let iFileMap
+    let iFileMap = {}
     if (basePath && fileMap) {
       Object.keys(fileMap).forEach((key) => {
         iFileMap[path.resolve(basePath, key)] = fileMap[key].map(
@@ -30,10 +30,8 @@ class YylConcatWebpackPlugin {
     this.option = {
       fileMap: iFileMap,
       fileName: fileName || '[name]-[hash:8].[ext]',
-      basePath: basePath || process.cwd(),
       uglify: uglify || false
     }
-    this.createHooks()
   }
   static getName() {
     return PLUGIN_NAME
@@ -79,7 +77,7 @@ class YylConcatWebpackPlugin {
   }
   apply(compiler) {
     const { output, context } = compiler.options
-    const { fileMap } = this.option
+    const { fileMap, uglify } = this.option
 
     const moduleAssets = {}
 
@@ -142,9 +140,9 @@ class YylConcatWebpackPlugin {
         // fileMap 格式化
         const rMap = {}
         Object.keys(fileMap).forEach((key) => {
-          rMap[path.resolve(context, key)] = fileMap[key].map((iPath) => {
-            return path.resolve(context, iPath)
-          })
+          rMap[path.resolve(context, key)] = fileMap[key].map(
+            (iPath) => path.resolve(context, iPath)
+          )
         })
 
 
@@ -209,8 +207,8 @@ class YylConcatWebpackPlugin {
           // - hooks.afterConcat
 
           compilation.hooks.moduleAsset.call({
-            userRequest: util.path.join(output.path, assetName)
-          }, util.path.join(output.path, finalName))
+            userRequest: assetName
+          }, finalName)
         })
         // - concat
         done()
