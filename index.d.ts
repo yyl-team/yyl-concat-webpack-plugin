@@ -16,6 +16,7 @@ interface Hooks {
 declare class YylConcatWebpackPlugin {
   constructor(op: YylConcatWebpackPluginOption)
   static getHooks(compilation: any): Hooks
+  static getName(): string
 }
 
 
