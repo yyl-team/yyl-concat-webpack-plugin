@@ -1,6 +1,6 @@
 {
   "name": "yyl-concat-webpack-plugin",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "concat webpack plugin",
   "engines": {
     "node": ">= 8.0.0"
@@ -9,16 +9,14 @@
   "types": "index.d.ts",
   "scripts": {
     "test": "jest ./test/jest/",
-    "c-base:watch": "node ./test/commander.js watch --path ./test/case/base/",
-    "c-base:all": "node ./test/commander.js all --path ./test/case/base/",
     "cba": "node ./test/commander.js all --path ./test/case/base/",
     "cbw": "node ./test/commander.js watch --path ./test/case/base/",
-    "c-hooks:all": "node ./test/commander.js all --path ./test/case/hooks/",
-    "c-hooks:watch": "node ./test/commander.js watch --path ./test/case/hooks/",
     "cha": "node ./test/commander.js all --path ./test/case/hooks/",
     "che": "node ./test/commander.js watch --path ./test/case/hooks/",
-    "c-relative-file:watch": "node ./test/commander.js watch --path ./test/case/relative-file/",
-    "c-relative-file:all": "node ./test/commander.js all --path ./test/case/relative-file/"
+    "crw": "node ./test/commander.js watch --path ./test/case/relative-file/",
+    "cra": "node ./test/commander.js all --path ./test/case/relative-file/",
+    "cnw": "node ./test/commander.js watch --path ./test/case/none/",
+    "cna": "node ./test/commander.js all --path ./test/case/none/"
   },
   "repository": {
     "type": "git",
