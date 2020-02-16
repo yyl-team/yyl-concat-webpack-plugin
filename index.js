@@ -76,6 +76,10 @@ class YylConcatWebpackPlugin {
     const { output, context } = compiler.options
     const { fileMap, uglify } = this.option
 
+    if (!fileMap || !Object.keys(fileMap).length) {
+      return
+    }
+
 
     const moduleAssets = {}
 
@@ -147,9 +151,14 @@ class YylConcatWebpackPlugin {
           )
         })
 
+        const rMapKeys = Object.keys(rMap)
 
-        logger.info(LANG.BUILD_CONCAT)
-        await util.forEach(Object.keys(rMap), async (targetPath) => {
+        if (rMapKeys.length) {
+          logger.info(LANG.BUILD_CONCAT)
+        } else {
+          logger.info(LANG.NO_CONCAT)
+        }
+        await util.forEach(rMapKeys, async (targetPath) => {
           const assetName = util.path.relative(output.path, targetPath)
           const iConcat = new Concat(true, targetPath, '\n')
           const srcs = []
