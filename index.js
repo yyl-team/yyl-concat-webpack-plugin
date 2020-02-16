@@ -4,15 +4,12 @@ const Concat = require('concat-with-sourcemaps')
 const fs = require('fs')
 const createHash = require('crypto').createHash
 const UglifyJS = require('uglify-es')
+const LANG = require('./lang/index')
 
 const { getHooks } = require('./lib/hooks')
 
 
 const PLUGIN_NAME = 'yylConcat'
-
-const printError = function(msg) {
-  throw `yyl-concat-webpack-plugin error: ${msg}`
-}
 
 class YylConcatWebpackPlugin {
   constructor(op) {
@@ -79,6 +76,7 @@ class YylConcatWebpackPlugin {
     const { output, context } = compiler.options
     const { fileMap, uglify } = this.option
 
+
     const moduleAssets = {}
 
 
@@ -93,6 +91,9 @@ class YylConcatWebpackPlugin {
     compiler.hooks.emit.tapAsync(
       PLUGIN_NAME,
       async (compilation, done) => {
+        const logger = compilation.getLogger(PLUGIN_NAME)
+
+        logger.group(PLUGIN_NAME)
         // + init assetMap
         const assetMap = {}
         compilation.chunks.forEach((chunk) => {
@@ -129,7 +130,8 @@ class YylConcatWebpackPlugin {
           if (ext === '.js') {
             const result = UglifyJS.minify(cnt.toString())
             if (result.error) {
-              printError(result.error)
+              logger.error(LANG.UGLIFY_ERROR, result.error)
+              return cnt
             } else {
               return result.code
             }
@@ -146,9 +148,11 @@ class YylConcatWebpackPlugin {
         })
 
 
+        logger.info(LANG.BUILD_CONCAT)
         await util.forEach(Object.keys(rMap), async (targetPath) => {
           const assetName = util.path.relative(output.path, targetPath)
           const iConcat = new Concat(true, targetPath, '\n')
+          const srcs = []
           await util.forEach(rMap[targetPath], async (srcPath) => {
             const assetKey = util.path.relative(output.path, srcPath)
 
@@ -171,7 +175,8 @@ class YylConcatWebpackPlugin {
               fileInfo.src = srcPath
               fileInfo.source = fs.readFileSync(srcPath)
             } else {
-              return printError(`path not exists: ${srcPath}`)
+              logger.warn(`${LANG.PATH_NOT_EXITS}: ${srcPath}`)
+              return
             }
 
             // + hooks.beforeConcat
@@ -183,6 +188,7 @@ class YylConcatWebpackPlugin {
               fileInfo.src,
               formatSource(fileInfo.source, path.extname(fileInfo.src))
             )
+            srcs.push(fileInfo.src)
           })
           const finalName = this.getFileName(assetName, iConcat.content)
 
@@ -195,7 +201,9 @@ class YylConcatWebpackPlugin {
           }
 
           afterOption = await iHooks.afterConcat.promise(afterOption)
+          // - hooks.afterConcat
 
+          logger.info(`${finalName} <- [${srcs.map((iPath) => path.relative(output.path, iPath)).join(', ')}]`)
           compilation.assets[finalName] = {
             source() {
               return afterOption.source
@@ -204,13 +212,13 @@ class YylConcatWebpackPlugin {
               return afterOption.source.length
             }
           }
-          // - hooks.afterConcat
 
           compilation.hooks.moduleAsset.call({
             userRequest: assetName
           }, finalName)
         })
         // - concat
+        logger.groupEnd()
         done()
       }
     )
