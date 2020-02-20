@@ -38,8 +38,8 @@ const config = {
 // - setting
 // + iPluginOption
 const iPluginOption = {
-  fileName: '[name].[hash:16].[ext]',
-  uglify: true
+  filename: '[name].[hash:16].[ext]',
+  minify: true
 }
 // - iPluginOption
 // + hookCheck

@@ -188,8 +188,8 @@ const wConfig = {
     }),
     new IPlugin({
       fileMap: config.concat,
-      fileName: '[name].[hash:16].[ext]',
-      uglify: false
+      filename: '[name].[hash:16].[ext]',
+      minify: false
     })
   ],
   optimization: {

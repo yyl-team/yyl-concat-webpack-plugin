@@ -13,7 +13,7 @@ const PLUGIN_NAME = 'yylConcat'
 
 class YylConcatWebpackPlugin {
   constructor(op) {
-    const { fileMap, basePath, uglify, fileName, logBasePath } = op
+    const { fileMap, basePath, minify, filename, logBasePath } = op
     let iFileMap = {}
     if (basePath && fileMap) {
       Object.keys(fileMap).forEach((key) => {
@@ -28,9 +28,9 @@ class YylConcatWebpackPlugin {
       /** 文件映射 {[dist: string] : string[]} */
       fileMap: iFileMap,
       /** 生成的文件名 */
-      fileName: fileName || '[name]-[hash:8].[ext]',
+      filename: filename || '[name]-[hash:8].[ext]',
       /** 是否 uglify 处理 */
-      uglify: uglify || false,
+      minify: minify || false,
       /** 日志输出的相对路径 */
       logBasePath: logBasePath || process.cwd()
     }
@@ -51,7 +51,7 @@ class YylConcatWebpackPlugin {
     return ext
   }
   getFileName(name, cnt) {
-    const { fileName } = this.option
+    const { filename } = this.option
 
     const REG_HASH = /\[hash:(\d+)\]/g
     const REG_NAME = /\[name\]/g
@@ -63,14 +63,14 @@ class YylConcatWebpackPlugin {
     const iName = basename.slice(0, basename.length - (ext.length > 0 ? ext.length + 1 : 0))
 
     let hash = ''
-    if (fileName.match(REG_HASH)) {
+    if (filename.match(REG_HASH)) {
       let hashLen = 0
-      fileName.replace(REG_HASH, (str, $1) => {
+      filename.replace(REG_HASH, (str, $1) => {
         hashLen = +$1
         hash = createHash('md5').update(cnt.toString()).digest('hex').slice(0, hashLen)
       })
     }
-    const r = fileName
+    const r = filename
       .replace(REG_HASH, hash)
       .replace(REG_NAME, iName)
       .replace(REG_EXT, ext)
@@ -79,7 +79,7 @@ class YylConcatWebpackPlugin {
   }
   apply(compiler) {
     const { output, context } = compiler.options
-    const { fileMap, uglify, logBasePath } = this.option
+    const { fileMap, minify, logBasePath } = this.option
 
     if (!fileMap || !Object.keys(fileMap).length) {
       return
@@ -133,7 +133,7 @@ class YylConcatWebpackPlugin {
         const iHooks = getHooks(compilation)
 
         const formatSource = function (cnt, ext) {
-          if (!uglify) {
+          if (!minify) {
             return cnt
           }
           if (ext === '.js') {

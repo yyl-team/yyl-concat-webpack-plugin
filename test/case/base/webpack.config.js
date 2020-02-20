@@ -61,8 +61,8 @@ config.concat[path.join(config.alias.cssDest, 'vendorsV2.css')] = [
 // + iPluginOption
 const iPluginOption = {
   fileMap: config.concat,
-  fileName: '[name].[hash:16].[ext]',
-  uglify: true
+  filename: '[name].[hash:16].[ext]',
+  minify: true
 }
 // - iPluginOption
 // + hookCheck

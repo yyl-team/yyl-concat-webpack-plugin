@@ -1,6 +1,6 @@
 {
   "name": "yyl-concat-webpack-plugin",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "concat webpack plugin",
   "engines": {
     "node": ">= 8.0.0"
