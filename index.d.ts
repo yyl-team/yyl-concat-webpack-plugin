@@ -26,9 +26,15 @@ declare class YylConcatWebpackPlugin {
 
 
 interface YylConcatWebpackPluginOption {
+  /** 文件映射 {[dist: string] : string[]} */
   fileMap: { [target: string]: string[] }
+  /** 生成的文件名, 默认为 [name]-[hash:8].[ext] */
   fileName?: string
+  /** 是否压缩, 默认 false */
   uglify?: boolean
+  /** 当设置 basePath后， fileMap 会进行一次 path.resolve 处理 */
   basePath?: string
+  /** 日志输出的文件路径相对地址: 默认为 process.cwd() */
+  logBasePath?: string
 }
 export = YylConcatWebpackPlugin

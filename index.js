@@ -13,7 +13,7 @@ const PLUGIN_NAME = 'yylConcat'
 
 class YylConcatWebpackPlugin {
   constructor(op) {
-    const { fileMap, basePath, uglify, fileName } = op
+    const { fileMap, basePath, uglify, fileName, logBasePath } = op
     let iFileMap = {}
     if (basePath && fileMap) {
       Object.keys(fileMap).forEach((key) => {
@@ -25,9 +25,14 @@ class YylConcatWebpackPlugin {
       iFileMap = fileMap || {}
     }
     this.option = {
+      /** 文件映射 {[dist: string] : string[]} */
       fileMap: iFileMap,
+      /** 生成的文件名 */
       fileName: fileName || '[name]-[hash:8].[ext]',
-      uglify: uglify || false
+      /** 是否 uglify 处理 */
+      uglify: uglify || false,
+      /** 日志输出的相对路径 */
+      logBasePath: logBasePath || process.cwd()
     }
   }
   static getName() {
@@ -74,7 +79,7 @@ class YylConcatWebpackPlugin {
   }
   apply(compiler) {
     const { output, context } = compiler.options
-    const { fileMap, uglify } = this.option
+    const { fileMap, uglify, logBasePath } = this.option
 
     if (!fileMap || !Object.keys(fileMap).length) {
       return
@@ -212,7 +217,7 @@ class YylConcatWebpackPlugin {
           afterOption = await iHooks.afterConcat.promise(afterOption)
           // - hooks.afterConcat
 
-          logger.info(`${finalName} <- [${srcs.map((iPath) => path.relative(output.path, iPath)).join(', ')}]`)
+          logger.info(`${finalName} <- [${srcs.map((iPath) => path.relative(logBasePath, iPath)).join(', ')}]`)
           compilation.assets[finalName] = {
             source() {
               return afterOption.source

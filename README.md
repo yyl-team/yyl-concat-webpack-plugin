@@ -15,6 +15,7 @@ const wConfig = {
         ]
       },
       uglify: false,
+      logBasePath: process.cwd(),
       fileName: '[name]-[hash:8].[ext]'
     })
   ]
