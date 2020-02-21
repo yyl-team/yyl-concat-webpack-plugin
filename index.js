@@ -217,6 +217,11 @@ class YylConcatWebpackPlugin {
           afterOption = await iHooks.afterConcat.promise(afterOption)
           // - hooks.afterConcat
 
+          // 添加 watch
+          afterOption.srcs.forEach((srcPath) => {
+            compilation.fileDependencies.add(srcPath)
+          })
+
           logger.info(`${finalName} <- [${srcs.map((iPath) => path.relative(logBasePath, iPath)).join(', ')}]`)
           compilation.assets[finalName] = {
             source() {

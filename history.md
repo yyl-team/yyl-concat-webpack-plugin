@@ -1,6 +1,10 @@
 # 历史版本
+## 0.2.7(2020-02-21)
+* feat: 添加 watch hooks
+
 ## 0.2.6(2020-02-20)
 * feat: 规范化命名: fileName -> filename, uglify -> minify
+
 ## 0.2.5(2020-02-20)
 * feat: 新增 `logBasePath` 属性
 
