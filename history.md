@@ -1,6 +1,8 @@
 # 历史版本
-## 0.2.8 (*)
+## 0.2.8 (2020-02-22)
 * feat: 调整测试工具
+* feat: 新增 ie8 option
+* feat: 替换 uglify -> terser
 
 ## 0.2.7(2020-02-21)
 * feat: 添加 watch hooks
