@@ -3,7 +3,7 @@ const util = require('yyl-util')
 const Concat = require('concat-with-sourcemaps')
 const fs = require('fs')
 const createHash = require('crypto').createHash
-const UglifyJS = require('uglify-es')
+const Terser = require('terser')
 const LANG = require('./lang/index')
 
 const { getHooks } = require('./lib/hooks')
@@ -13,7 +13,7 @@ const PLUGIN_NAME = 'yylConcat'
 
 class YylConcatWebpackPlugin {
   constructor(op) {
-    const { fileMap, basePath, minify, filename, logBasePath } = op
+    const { fileMap, basePath, minify, filename, logBasePath, ie8 } = op
     let iFileMap = {}
     if (basePath && fileMap) {
       Object.keys(fileMap).forEach((key) => {
@@ -29,8 +29,10 @@ class YylConcatWebpackPlugin {
       fileMap: iFileMap,
       /** 生成的文件名 */
       filename: filename || '[name]-[hash:8].[ext]',
-      /** 是否 uglify 处理 */
+      /** 是否 minify 处理 */
       minify: minify || false,
+      /** 压缩是否支持ie8 */
+      ie8,
       /** 日志输出的相对路径 */
       logBasePath: logBasePath || process.cwd()
     }
@@ -79,7 +81,7 @@ class YylConcatWebpackPlugin {
   }
   apply(compiler) {
     const { output, context } = compiler.options
-    const { fileMap, minify, logBasePath } = this.option
+    const { fileMap, minify, logBasePath, ie8 } = this.option
 
     if (!fileMap || !Object.keys(fileMap).length) {
       return
@@ -137,7 +139,9 @@ class YylConcatWebpackPlugin {
             return cnt
           }
           if (ext === '.js') {
-            const result = UglifyJS.minify(cnt.toString())
+            const result = Terser.minify(cnt.toString(), {
+              ie8
+            })
             if (result.error) {
               logger.error(LANG.UGLIFY_ERROR, result.error)
               return cnt
@@ -159,7 +163,9 @@ class YylConcatWebpackPlugin {
         const rMapKeys = Object.keys(rMap)
 
         if (rMapKeys.length) {
-          logger.info(LANG.BUILD_CONCAT)
+          logger.info(`${LANG.MINIFY_INFO}: ${minify || 'false'}`)
+          logger.info(`${LANG.IE8_INFO}: ${ie8 || 'false'}`)
+          logger.info(`${LANG.BUILD_CONCAT}:`)
         } else {
           logger.info(LANG.NO_CONCAT)
         }

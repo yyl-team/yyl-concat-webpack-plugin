@@ -1,6 +1,6 @@
 {
   "name": "yyl-concat-webpack-plugin",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "concat webpack plugin",
   "engines": {
     "node": ">= 8.0.0"
@@ -35,14 +35,15 @@
   "homepage": "https://github.com/jackness1208/yyl-concat-webpack-plugin#readme",
   "devDependencies": {
     "jest": "^25.1.0",
-    "webpack": "^4.41.1",
+    "webpack": "^4.41.6",
     "yyl-fs": "^0.3.3",
     "yyl-os": "^0.10.2",
     "yyl-util": "^2.3.7"
   },
   "dependencies": {
     "concat-with-sourcemaps": "1.1.0",
-    "tapable": "^1.1.3",
+    "tapable": "1.1.3",
+    "terser": "4.6.3",
     "uglify-es": "3.3.9"
   }
 }
