@@ -5,6 +5,7 @@ const fs = require('fs')
 const createHash = require('crypto').createHash
 const Terser = require('terser')
 const LANG = require('./lang/index')
+const chalk = require('chalk')
 
 const { getHooks } = require('./lib/hooks')
 
@@ -231,7 +232,7 @@ class YylConcatWebpackPlugin {
             compilation.fileDependencies.add(srcPath)
           })
 
-          logger.info(`${finalName} <- [${srcs.map((iPath) => path.relative(logBasePath, iPath)).join(', ')}]`)
+          logger.info(`${chalk.cyan(finalName)} <- [${srcs.map((iPath) => chalk.green(path.relative(logBasePath, iPath))).join(', ')}]`)
           compilation.assets[finalName] = {
             source() {
               return afterOption.source
