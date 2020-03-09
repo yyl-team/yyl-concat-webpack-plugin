@@ -35,23 +35,28 @@ const config = {
   concat: {}
 }
 
-config.concat[path.join(config.alias.jsDest, 'vendors.js')] = [
+config.concat[path.join(config.alias.jsDest, 'ab.js')] = [
   path.join(config.alias.srcRoot, 'js/a.js'),
   path.join(config.alias.srcRoot, 'js/b.js')
 ]
 
-config.concat[path.join(config.alias.jsDest, 'vendorsV2.js')] = [
+config.concat[path.join(config.alias.jsDest, 'ac.js')] = [
+  path.join(config.alias.srcRoot, 'js/a.js'),
+  path.join(config.alias.srcRoot, 'js/c.js')
+]
+
+config.concat[path.join(config.alias.jsDest, 'abindex.js')] = [
   path.join(config.alias.srcRoot, 'js/a.js'),
   path.join(config.alias.srcRoot, 'js/b.js'),
   path.join(config.alias.jsDest, 'index.js')
 ]
 
-config.concat[path.join(config.alias.cssDest, 'vendors.css')] = [
+config.concat[path.join(config.alias.cssDest, 'ab.css')] = [
   path.join(config.alias.srcRoot, 'css/a.css'),
   path.join(config.alias.srcRoot, 'css/b.css')
 ]
 
-config.concat[path.join(config.alias.cssDest, 'vendorsV2.css')] = [
+config.concat[path.join(config.alias.cssDest, 'abindex.css')] = [
   path.join(config.alias.srcRoot, 'css/a.css'),
   path.join(config.alias.srcRoot, 'css/b.css'),
   path.join(config.alias.cssDest, 'index.css')
