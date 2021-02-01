@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-(() => {
+;(() => {
   const pageInfo = {
     name: 'a.js'
   }

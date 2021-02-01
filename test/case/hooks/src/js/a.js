@@ -1,2 +1,9 @@
 /* eslint-disable no-console */
-console.log('It\'s a.js')
+;(() => {
+  const pageInfo = {
+    name: 'a.js'
+  }
+  pageInfo.now = new Date()
+
+  console.log(pageInfo)
+})()

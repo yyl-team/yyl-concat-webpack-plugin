@@ -1,25 +1,19 @@
-const { AsyncSeriesWaterfallHook } = require('tapable')
-
+import { AsyncSeriesWaterfallHook } from 'tapable'
+import { Compilation } from 'webpack'
 const iWeakMap = new WeakMap()
 
-function createHooks() {
+export function createHooks() {
   return {
     beforeConcat: new AsyncSeriesWaterfallHook(['pluginArgs']),
     afterConcat: new AsyncSeriesWaterfallHook(['pluginArgs'])
   }
 }
 
-function getHooks(compilation) {
+export function getHooks(compilation: Compilation) {
   let hooks = iWeakMap.get(compilation)
   if (hooks === undefined) {
     hooks = createHooks()
     iWeakMap.set(compilation, hooks)
   }
   return hooks
-}
-
-
-module.exports = {
-  getHooks,
-  createHooks
 }

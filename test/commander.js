@@ -1,8 +1,8 @@
 const util = require('yyl-util')
 const path = require('path')
 const extOs = require('yyl-os')
-const fs = require('fs')
 const extFs = require('yyl-fs')
+const fs = require('fs')
 
 const handle = {
   async watch({ env }) {
@@ -10,12 +10,10 @@ const handle = {
     if (!fs.existsSync(path.join(targetPath, 'node_modules'))) {
       await extOs.runSpawn('npm i', targetPath)
     }
-
     const distPath = path.join(targetPath, 'dist')
     if (fs.existsSync(distPath)) {
-      await extFs.removeFiles(distPath)
+      extFs.removeFiles(distPath, true)
     }
-
     await extOs.runSpawn('npm run d', targetPath)
   },
   async all({ env }) {
@@ -23,10 +21,9 @@ const handle = {
     if (!fs.existsSync(path.join(targetPath, 'node_modules'))) {
       await extOs.runSpawn('npm i', targetPath)
     }
-
     const distPath = path.join(targetPath, 'dist')
     if (fs.existsSync(distPath)) {
-      await extFs.removeFiles(distPath)
+      extFs.removeFiles(distPath, true)
     }
     await extOs.runSpawn('npm run all', targetPath)
   }

@@ -6,7 +6,7 @@ body {
   margin: 0;
   height: 100%;
   background: #d0d0d0;
-  text-align:  center;
+  text-align: center;
 }
 body::before {
   content: '';
@@ -38,5 +38,5 @@ body::before {
   color: #666;
   margin: 0;
   padding: 0;
-  text-align:  center;
+  text-align: center;
 }

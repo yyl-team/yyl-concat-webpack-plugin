@@ -1,4 +1,4 @@
-module.exports = {
+export const LANG = {
   UGLIFY_ERROR: '代码压缩出错',
   BUILD_CONCAT: '合并信息',
   NO_CONCAT: '无合并信息',
