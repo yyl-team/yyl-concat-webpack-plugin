@@ -5320,7 +5320,19 @@ yocto-queue@^0.1.0:
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
 
-yyl-util@^2.3.9:
+yyl-fs@^0.3.3:
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/yyl-fs/-/yyl-fs-0.3.3.tgz#aa409a5ea451cd0da287315665f338b1a24d4324"
+  integrity sha512-3I+zY97ZJz91whuiBcdv3qdTQzErI8Dm2YSfJNK3XIAXmzWOSj1nSf6x59KrG4buzIaS3t2LEHVq4kPSYqu/9Q==
+
+yyl-os@^0.11.4:
+  version "0.11.4"
+  resolved "https://registry.yarnpkg.com/yyl-os/-/yyl-os-0.11.4.tgz#635172b344ab92d2a517bc8c011b8836a30f4e40"
+  integrity sha512-R2YvkA4BMCCk6BdJliBThG3ISN6FZOqeqfiuTXATG8XXF6XVdcL+Ik1H1udWZS99WMLLz+783iKs88KM5CQR0Q==
+  dependencies:
+    yyl-util "^2.3.5"
+
+yyl-util@^2.3.5, yyl-util@^2.3.9:
   version "2.3.9"
   resolved "https://registry.yarnpkg.com/yyl-util/-/yyl-util-2.3.9.tgz#4c4f5d1af1c9b474e46db5cce6afbc82bbd586ce"
   integrity sha512-sKNudT5RApLNLDnHSppoR+K9yslDmof57gQ5yHDcX8xRADIv8r218DHIsyksSnlEmlld9TXAMYLeazAu4ufW0A==

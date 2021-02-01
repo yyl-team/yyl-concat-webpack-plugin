@@ -305,3 +305,5 @@ export default class YylConcatWebpackPlugin {
     })
   }
 }
+
+module.exports = YylConcatWebpackPlugin
