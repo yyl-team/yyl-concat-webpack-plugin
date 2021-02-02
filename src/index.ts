@@ -205,21 +205,14 @@ export default class YylConcatWebpackPlugin extends YylWebpackPluginBase {
           .map((iPath) => chalk.green(path.relative(logContext, iPath)))
           .join(', ')}]`
       )
-      compilation.assets[finalName] = {
-        source() {
-          return afterOption.source
-        },
-        size() {
-          return afterOption.source.length
+      this.updateAssets({
+        compilation,
+        assetsInfo: {
+          src: assetName,
+          dist: finalName,
+          source: afterOption.source
         }
-      } as any
-
-      compilation.hooks.moduleAsset.call(
-        {
-          userRequest: assetName
-        } as any,
-        finalName
-      )
+      })
     })
 
     // - concat
