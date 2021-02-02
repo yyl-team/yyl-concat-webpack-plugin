@@ -1,5 +1,5 @@
 {
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "output/index.js",
   "types": "output/index.d.ts",
   "eslintConfig": {
