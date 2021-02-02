@@ -26,6 +26,7 @@
     "webpack": "5",
     "webpack-cli": "^3.3.9",
     "webpack-dev-server": "^3.8.2",
+    "webpack-merge": "^5.7.3",
     "yyl-fs": "^0.3.3",
     "yyl-os": "^0.10.2",
     "yyl-util": "^2.3.7"

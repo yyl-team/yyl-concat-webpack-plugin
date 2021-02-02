@@ -5336,3 +5336,10 @@ yyl-util@^2.3.5, yyl-util@^2.3.9:
   version "2.3.9"
   resolved "https://registry.yarnpkg.com/yyl-util/-/yyl-util-2.3.9.tgz#4c4f5d1af1c9b474e46db5cce6afbc82bbd586ce"
   integrity sha512-sKNudT5RApLNLDnHSppoR+K9yslDmof57gQ5yHDcX8xRADIv8r218DHIsyksSnlEmlld9TXAMYLeazAu4ufW0A==
+
+yyl-webpack-plugin-base@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/yyl-webpack-plugin-base/-/yyl-webpack-plugin-base-0.1.0.tgz#ba722afe55a8996b74e646354bcb26af7e36d7a8"
+  integrity sha512-KRlKduMiNJf8OkIDD1AxIGgoYNq2MLS5Lor3rEGpwZnrG23Z+7lR9FFJ/mjXgaPTljJeJ9XinAIAWm8tcGcvFg==
+  dependencies:
+    yyl-util "^2.3.9"
