@@ -8,9 +8,7 @@ const ExtPlugin = require('./ext-plugin')
 const baseWConfig = require('./webpack.config')
 
 const wConfig = {
-  plugins: [
-    new ExtPlugin()
-  ]
+  plugins: [new ExtPlugin()]
 }
 
 module.exports = merge(baseWConfig, wConfig)
