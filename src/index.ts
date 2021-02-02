@@ -37,7 +37,7 @@ interface YylConcatWebpackPluginOption {
   /** 日志输出的文件路径相对地址: 默认为 process.cwd() */
   logBasePath?: string
   /** 压缩是否支持 ie8 */
-  ie8: boolean
+  ie8?: boolean
 }
 
 export default class YylConcatWebpackPlugin {
