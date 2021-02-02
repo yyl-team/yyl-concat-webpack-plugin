@@ -16,8 +16,8 @@ const iPluginOption = {
     './dist/css/abindex.css': ['./src/css/a.css', './src/css/b.css', './dist/css/index.css']
   },
   minify: true,
-  logBasePath: __dirname,
-  basePath: __dirname
+  logContext: __dirname,
+  context: __dirname
 }
 // - plugin options
 

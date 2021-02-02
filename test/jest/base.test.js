@@ -20,7 +20,7 @@ test('case base test', async () => {
   }
 
   process.chdir(targetPath)
-  const wConfig = require(path.join(targetPath, 'webpack.config.js'))
+  const wConfig = require(path.join(targetPath, 'webpack-hooks.config.js'))
 
   await util.makeAwait((done) => {
     webpack(wConfig, (err, stats) => {

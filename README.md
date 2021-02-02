@@ -101,40 +101,35 @@ class ExtPlugin {
 ## ts
 
 ```typescript
-/// <reference types="node" />
 import { Compilation, Compiler } from 'webpack'
-export interface ModuleAssets {
-  [key: string]: string
-}
-export interface FileInfo {
-  src: string
-  dist: string
-  source: Buffer
-}
-interface YylConcatWebpackPluginOption {
+import {
+  AssetsInfo,
+  YylWebpackPluginBaseOption,
+  YylWebpackPluginBase
+} from 'yyl-webpack-plugin-base'
+export declare type FileInfo = Required<AssetsInfo>
+interface YylConcatWebpackPluginOption
+  extends Pick<YylWebpackPluginBaseOption, 'context' | 'filename'> {
   /** 文件映射 {[dist: string] : string[]} */
   fileMap: {
     [target: string]: string[]
   }
-  /** 生成的文件名, 默认为 [name]-[hash:8].[ext] */
-  filename?: string
   /** 是否压缩, 默认 false */
   minify?: boolean
-  /** 当设置 basePath后， fileMap 会进行一次 path.resolve 处理 */
-  basePath?: string
   /** 日志输出的文件路径相对地址: 默认为 process.cwd() */
-  logBasePath?: string
+  logContext?: string
   /** 压缩是否支持 ie8 */
-  ie8: boolean
+  ie8?: boolean
 }
-export default class YylConcatWebpackPlugin {
+export default class YylConcatWebpackPlugin extends YylWebpackPluginBase {
+  /** hooks 用 获取组件hooks */
   static getHooks(compilation: Compilation): any
+  /** hooks 用 获取组件名字 */
   static getName(): string
+  /** 配置 */
   option: Required<YylConcatWebpackPluginOption>
   constructor(option?: YylConcatWebpackPluginOption)
-  getFileType(str: string): string
-  getFileName(name: string, cnt: Buffer): string
-  apply(compiler: Compiler): void
+  apply(compiler: Compiler): Promise<void>
 }
 export {}
 ```
