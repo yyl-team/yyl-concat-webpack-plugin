@@ -93,14 +93,13 @@ export default class YylConcatWebpackPlugin extends YylWebpackPluginBase {
     const { output, context } = compiler.options
     const { fileMap, minify, logContext, ie8 } = this.option
 
-    const logger = compiler.getInfrastructureLogger(PLUGIN_NAME)
-    logger.group(PLUGIN_NAME)
-
     if (!fileMap || !Object.keys(fileMap).length) {
       return
     }
 
     const { compilation, done } = await this.initCompilation(compiler)
+    const logger = compilation.getLogger(PLUGIN_NAME)
+    logger.group(PLUGIN_NAME)
 
     // + concat
     const iHooks = getHooks(compilation)
