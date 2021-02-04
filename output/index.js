@@ -1,5 +1,5 @@
 /*!
- * yyl-concat-webpack-plugin cjs 1.0.5
+ * yyl-concat-webpack-plugin cjs 1.0.6
  * (c) 2020 - 2021 
  * Released under the MIT License.
  */
@@ -121,12 +121,12 @@ class YylConcatWebpackPlugin extends yylWebpackPluginBase.YylWebpackPluginBase {
         return __awaiter(this, void 0, void 0, function* () {
             const { output, context } = compiler.options;
             const { fileMap, minify, logContext, ie8 } = this.option;
-            const logger = compiler.getInfrastructureLogger(PLUGIN_NAME);
-            logger.group(PLUGIN_NAME);
             if (!fileMap || !Object.keys(fileMap).length) {
                 return;
             }
             const { compilation, done } = yield this.initCompilation(compiler);
+            const logger = compilation.getLogger(PLUGIN_NAME);
+            logger.group(PLUGIN_NAME);
             // + concat
             const iHooks = getHooks(compilation);
             const formatSource = function (cnt, ext) {
