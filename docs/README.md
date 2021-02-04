@@ -1,3 +1,5 @@
+yyl-concat-webpack-plugin / [Exports](modules.md)
+
 # yyl-concat-webpack-plugin
 
 ## USAGE
