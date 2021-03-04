@@ -2,12 +2,10 @@ import path from 'path'
 import util from 'yyl-util'
 import fs from 'fs'
 import Concat from 'concat-with-sourcemaps'
-import { createHash } from 'crypto'
 import * as Terser from 'terser'
 import chalk from 'chalk'
 import { Compilation, Compiler } from 'webpack'
 import {
-  ModuleAssets,
   AssetsInfo,
   YylWebpackPluginBaseOption,
   YylWebpackPluginBase
@@ -17,9 +15,6 @@ import { getHooks } from './hooks'
 
 const PLUGIN_NAME = 'yylConcat'
 
-const printError = function (err: Error) {
-  throw new Error(`yyl-concat-webpack-plugin error:', ${err.message}`)
-}
 export type FileInfo = Required<AssetsInfo>
 interface YylConcatWebpackPluginOption
   extends Pick<YylWebpackPluginBaseOption, 'context' | 'filename'> {
@@ -195,8 +190,9 @@ export default class YylConcatWebpackPlugin extends YylWebpackPluginBase {
       // - hooks.afterConcat
 
       // 添加 watch
-      afterOption.srcs.forEach((srcPath) => {
-        compilation.fileDependencies.add(srcPath)
+      this.addDependencies({
+        compilation,
+        srcs: afterOption.srcs
       })
 
       logger.info(
