@@ -48,7 +48,7 @@ Name | Type |
 
 **Returns:** [*default*](default.md)
 
-Defined in: [src/index.ts:55](https://github.com/jackness1208/yyl-concat-webpack-plugin/blob/86793b7/src/index.ts#L55)
+Defined in: [src/index.ts:50](https://github.com/jackness1208/yyl-concat-webpack-plugin/blob/31c2b6f/src/index.ts#L50)
 
 ## Properties
 
@@ -108,7 +108,7 @@ ___
 
 配置
 
-Defined in: [src/index.ts:48](https://github.com/jackness1208/yyl-concat-webpack-plugin/blob/86793b7/src/index.ts#L48)
+Defined in: [src/index.ts:43](https://github.com/jackness1208/yyl-concat-webpack-plugin/blob/31c2b6f/src/index.ts#L43)
 
 ## Methods
 
@@ -142,7 +142,7 @@ Name | Type |
 
 **Returns:** *Promise*<*void*\>
 
-Defined in: [src/index.ts:92](https://github.com/jackness1208/yyl-concat-webpack-plugin/blob/86793b7/src/index.ts#L92)
+Defined in: [src/index.ts:87](https://github.com/jackness1208/yyl-concat-webpack-plugin/blob/31c2b6f/src/index.ts#L87)
 
 ___
 
@@ -234,7 +234,7 @@ Name | Type |
 
 **Returns:** *any*
 
-Defined in: [src/index.ts:38](https://github.com/jackness1208/yyl-concat-webpack-plugin/blob/86793b7/src/index.ts#L38)
+Defined in: [src/index.ts:33](https://github.com/jackness1208/yyl-concat-webpack-plugin/blob/31c2b6f/src/index.ts#L33)
 
 ___
 
@@ -246,4 +246,4 @@ hooks 用 获取组件名字
 
 **Returns:** *string*
 
-Defined in: [src/index.ts:43](https://github.com/jackness1208/yyl-concat-webpack-plugin/blob/86793b7/src/index.ts#L43)
+Defined in: [src/index.ts:38](https://github.com/jackness1208/yyl-concat-webpack-plugin/blob/31c2b6f/src/index.ts#L38)

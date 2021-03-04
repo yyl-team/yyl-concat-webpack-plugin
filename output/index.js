@@ -1,5 +1,5 @@
 /*!
- * yyl-concat-webpack-plugin cjs 1.0.7
+ * yyl-concat-webpack-plugin cjs 1.0.8
  * (c) 2020 - 2021 
  * Released under the MIT License.
  */
@@ -215,8 +215,9 @@ class YylConcatWebpackPlugin extends yylWebpackPluginBase.YylWebpackPluginBase {
                 afterOption = yield iHooks.afterConcat.promise(afterOption);
                 // - hooks.afterConcat
                 // 添加 watch
-                afterOption.srcs.forEach((srcPath) => {
-                    compilation.fileDependencies.add(srcPath);
+                this.addDependencies({
+                    compilation,
+                    srcs: afterOption.srcs
                 });
                 logger.info(`${chalk__default['default'].cyan(finalName)} <- [${srcs
                     .map((iPath) => chalk__default['default'].green(path__default['default'].relative(logContext, iPath)))

@@ -1,5 +1,10 @@
 # 历史版本
 
+## 1.0.8 (2021-03-04)
+
+- feat: 更新 `yyl-webpack-plugin-base@0.1.7`
+- fix: 修复 concat 中如存在 dist 内容 会导致拷贝失败问题
+
 ## 1.0.7 (2021-02-04)
 
 - feat: 更新 `yyl-webpack-plugin-base@0.1.6`

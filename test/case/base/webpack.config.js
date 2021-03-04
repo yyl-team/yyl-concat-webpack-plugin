@@ -1,6 +1,7 @@
 'use strict'
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const extOs = require('yyl-os')
 const IPlugin = require('../../../')
 
@@ -10,7 +11,7 @@ console.log(IPlugin)
 const iPluginOption = {
   fileMap: {
     './dist/js/ab.js': ['./src/js/a.js', './src/js/b.js'],
-    './dist/js/ac.js': ['./src/js/a.js', './src/js/c.js'],
+    './dist/js/ac.js': ['./src/js/a.js', './src/js/notExist.js'],
     './dist/js/abindex.js': ['./src/js/a.js', './src/js/b.js', './dist/js/index.js'],
     './dist/css/ab.css': ['./src/css/a.css', './src/css/b.css'],
     './dist/css/abindex.css': ['./src/css/a.css', './src/css/b.css', './dist/css/index.css']
@@ -25,7 +26,7 @@ const wConfig = {
   mode: 'development',
   context: __dirname,
   entry: {
-    main: ['./src/entry/index/index.js']
+    index: ['./src/entry/index/index.js']
   },
   output: {
     path: path.join(__dirname, './dist/js'),
@@ -48,7 +49,7 @@ const wConfig = {
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader']
+        use: [MiniCssExtractPlugin.loader, 'css-loader']
       }
     ]
   },
@@ -57,6 +58,9 @@ const wConfig = {
   },
   devtool: 'source-map',
   plugins: [
+    new MiniCssExtractPlugin({
+      filename: '../css/[name]-[chunkhash:8].css'
+    }),
     new IPlugin(iPluginOption),
     new HtmlWebpackPlugin({
       template: './src/entry/index/index.html',
