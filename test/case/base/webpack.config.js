@@ -10,7 +10,7 @@ console.log(IPlugin)
 const iPluginOption = {
   fileMap: {
     './dist/js/ab.js': ['./src/js/a.js', './src/js/b.js'],
-    './dist/js/ac.js': ['./src/js/a.js', './src/js/c.js'],
+    './dist/js/ac.js': ['./src/js/a.js', './src/js/notExist.js'],
     './dist/js/abindex.js': ['./src/js/a.js', './src/js/b.js', './dist/js/index.js'],
     './dist/css/ab.css': ['./src/css/a.css', './src/css/b.css'],
     './dist/css/abindex.css': ['./src/css/a.css', './src/css/b.css', './dist/css/index.css']
