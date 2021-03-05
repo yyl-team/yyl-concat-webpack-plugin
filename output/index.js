@@ -1,5 +1,5 @@
 /*!
- * yyl-concat-webpack-plugin cjs 1.0.8
+ * yyl-concat-webpack-plugin cjs 1.0.9
  * (c) 2020 - 2021 
  * Released under the MIT License.
  */
@@ -196,7 +196,12 @@ class YylConcatWebpackPlugin extends yylWebpackPluginBase.YylWebpackPluginBase {
                         fileInfo.source = fs__default['default'].readFileSync(srcPath);
                     }
                     else {
-                        logger.warn(`${LANG.PATH_NOT_EXITS}: ${srcPath}`);
+                        const finalName = this.getFileName(assetName, Buffer.from(''));
+                        const srcs = rMap[targetPath];
+                        logger.warn(`${chalk__default['default'].cyan(finalName)} ${chalk__default['default'].yellow('<x')} [${srcs
+                            .map((iPath) => chalk__default['default'].green(path__default['default'].relative(logContext, iPath)))
+                            .join(', ')}]`);
+                        logger.warn(`-> ${LANG.PATH_NOT_EXITS}: ${srcPath}`);
                         return;
                     }
                     // + hooks.beforeConcat

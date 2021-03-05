@@ -167,7 +167,14 @@ export default class YylConcatWebpackPlugin extends YylWebpackPluginBase {
           fileInfo.src = srcPath
           fileInfo.source = fs.readFileSync(srcPath)
         } else {
-          logger.warn(`${LANG.PATH_NOT_EXITS}: ${srcPath}`)
+          const finalName = this.getFileName(assetName, Buffer.from(''))
+          const srcs = rMap[targetPath]
+          logger.warn(
+            `${chalk.cyan(finalName)} ${chalk.yellow('<x')} [${srcs
+              .map((iPath) => chalk.green(path.relative(logContext, iPath)))
+              .join(', ')}]`
+          )
+          logger.warn(`-> ${LANG.PATH_NOT_EXITS}: ${srcPath}`)
           return
         }
 
