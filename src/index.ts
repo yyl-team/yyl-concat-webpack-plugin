@@ -92,134 +92,142 @@ export default class YylConcatWebpackPlugin extends YylWebpackPluginBase {
       return
     }
 
-    const { compilation, done } = await this.initCompilation(compiler)
-    const logger = compilation.getLogger(PLUGIN_NAME)
-    logger.group(PLUGIN_NAME)
+    this.initCompilation({
+      compiler,
+      onProcessAssets: async (compilation) => {
+        const logger = compilation.getLogger(PLUGIN_NAME)
+        logger.group(PLUGIN_NAME)
 
-    // + concat
-    const iHooks = getHooks(compilation)
+        // + concat
+        const iHooks = getHooks(compilation)
 
-    const formatSource = async function (cnt: Buffer, ext: string): Promise<string> {
-      if (!minify) {
-        return cnt.toString()
-      }
-      if (ext === '.js') {
-        try {
-          const result = await Terser.minify(cnt.toString(), {
-            ie8
+        const formatSource = async function (cnt: Buffer, ext: string): Promise<string> {
+          if (!minify) {
+            return cnt.toString()
+          }
+          if (ext === '.js') {
+            try {
+              const result = await Terser.minify(cnt.toString(), {
+                ie8
+              })
+              return result.code || ''
+            } catch (er) {
+              logger.error(LANG.UGLIFY_ERROR, er)
+            }
+            return cnt.toString()
+          } else {
+            return cnt.toString()
+          }
+        }
+        // fileMap 格式化
+        const rMap: YylConcatWebpackPluginOption['fileMap'] = {}
+        Object.keys(fileMap).forEach((key) => {
+          if (context) {
+            rMap[path.resolve(context, key)] = fileMap[key].map((iPath) =>
+              path.resolve(context, iPath)
+            )
+          } else if (this.option.context) {
+            rMap[path.resolve(this.option.context, key)] = fileMap[key].map((iPath) =>
+              path.resolve(this.option.context, iPath)
+            )
+          }
+        })
+
+        const rMapKeys = Object.keys(rMap)
+
+        if (rMapKeys.length) {
+          logger.info(`${LANG.MINIFY_INFO}: ${minify || 'false'}`)
+          logger.info(`${LANG.IE8_INFO}: ${ie8 || 'false'}`)
+          logger.info(`${LANG.BUILD_CONCAT}:`)
+        } else {
+          logger.info(LANG.NO_CONCAT)
+        }
+        await util.forEach(rMapKeys, async (targetPath) => {
+          const assetName = util.path.relative(output.path || '', targetPath)
+          const iConcat = new Concat(true, targetPath, '\n')
+          const srcs: string[] = []
+          await util.forEach(rMap[targetPath], async (srcPath) => {
+            const assetKey = util.path.relative(output.path || '', srcPath)
+
+            if (path.extname(assetKey) === '.js') {
+              iConcat.add(null, `;/* ${path.basename(assetKey)} */`)
+            } else {
+              iConcat.add(null, `/* ${path.basename(assetKey)} */`)
+            }
+
+            let fileInfo: FileInfo = {
+              src: '',
+              dist: targetPath,
+              source: Buffer.from('')
+            }
+
+            if (this.assetMap[assetKey]) {
+              fileInfo.src = path.resolve(output.path || '', this.assetMap[assetKey])
+              fileInfo.source = Buffer.from(
+                compilation.assets[this.assetMap[assetKey]].source().toString(),
+                'utf-8'
+              )
+            } else if (fs.existsSync(srcPath)) {
+              fileInfo.src = srcPath
+              fileInfo.source = fs.readFileSync(srcPath)
+            } else {
+              const finalName = this.getFileName(assetName, Buffer.from(''))
+              const srcs = rMap[targetPath]
+              logger.warn(
+                `${chalk.cyan(finalName)} ${chalk.yellow('<x')} [${srcs
+                  .map((iPath) => chalk.green(path.relative(logContext, iPath)))
+                  .join(', ')}]`
+              )
+              logger.warn(`-> ${LANG.PATH_NOT_EXITS}: ${srcPath}`)
+              return
+            }
+
+            // + hooks.beforeConcat
+            fileInfo = await iHooks.beforeConcat.promise(fileInfo)
+            // - hooks.beforeConcat
+            iConcat.add(
+              fileInfo.src,
+              await formatSource(fileInfo.source, path.extname(fileInfo.src))
+            )
+            srcs.push(fileInfo.src)
           })
-          return result.code || ''
-        } catch (er) {
-          logger.error(LANG.UGLIFY_ERROR, er)
-        }
-        return cnt.toString()
-      } else {
-        return cnt.toString()
-      }
-    }
-    // fileMap 格式化
-    const rMap: YylConcatWebpackPluginOption['fileMap'] = {}
-    Object.keys(fileMap).forEach((key) => {
-      if (context) {
-        rMap[path.resolve(context, key)] = fileMap[key].map((iPath) => path.resolve(context, iPath))
-      } else if (this.option.context) {
-        rMap[path.resolve(this.option.context, key)] = fileMap[key].map((iPath) =>
-          path.resolve(this.option.context, iPath)
-        )
-      }
-    })
+          const finalName = this.getFileName(assetName, iConcat.content)
 
-    const rMapKeys = Object.keys(rMap)
+          // + hooks.afterConcat
+          let afterOption = {
+            dist: targetPath,
+            srcs: rMap[targetPath],
+            source: iConcat.content
+          }
 
-    if (rMapKeys.length) {
-      logger.info(`${LANG.MINIFY_INFO}: ${minify || 'false'}`)
-      logger.info(`${LANG.IE8_INFO}: ${ie8 || 'false'}`)
-      logger.info(`${LANG.BUILD_CONCAT}:`)
-    } else {
-      logger.info(LANG.NO_CONCAT)
-    }
-    await util.forEach(rMapKeys, async (targetPath) => {
-      const assetName = util.path.relative(output.path || '', targetPath)
-      const iConcat = new Concat(true, targetPath, '\n')
-      const srcs: string[] = []
-      await util.forEach(rMap[targetPath], async (srcPath) => {
-        const assetKey = util.path.relative(output.path || '', srcPath)
+          afterOption = await iHooks.afterConcat.promise(afterOption)
+          // - hooks.afterConcat
 
-        if (path.extname(assetKey) === '.js') {
-          iConcat.add(null, `;/* ${path.basename(assetKey)} */`)
-        } else {
-          iConcat.add(null, `/* ${path.basename(assetKey)} */`)
-        }
+          // 添加 watch
+          this.addDependencies({
+            compilation,
+            srcs: afterOption.srcs
+          })
 
-        let fileInfo: FileInfo = {
-          src: '',
-          dist: targetPath,
-          source: Buffer.from('')
-        }
-
-        if (this.assetMap[assetKey]) {
-          fileInfo.src = path.resolve(output.path || '', this.assetMap[assetKey])
-          fileInfo.source = Buffer.from(
-            compilation.assets[this.assetMap[assetKey]].source().toString(),
-            'utf-8'
-          )
-        } else if (fs.existsSync(srcPath)) {
-          fileInfo.src = srcPath
-          fileInfo.source = fs.readFileSync(srcPath)
-        } else {
-          const finalName = this.getFileName(assetName, Buffer.from(''))
-          const srcs = rMap[targetPath]
-          logger.warn(
-            `${chalk.cyan(finalName)} ${chalk.yellow('<x')} [${srcs
+          logger.info(
+            `${chalk.cyan(finalName)} <- [${srcs
               .map((iPath) => chalk.green(path.relative(logContext, iPath)))
               .join(', ')}]`
           )
-          logger.warn(`-> ${LANG.PATH_NOT_EXITS}: ${srcPath}`)
-          return
-        }
+          this.updateAssets({
+            compilation,
+            assetsInfo: {
+              src: assetName,
+              dist: finalName,
+              source: afterOption.source
+            }
+          })
+        })
 
-        // + hooks.beforeConcat
-        fileInfo = await iHooks.beforeConcat.promise(fileInfo)
-        // - hooks.beforeConcat
-        iConcat.add(fileInfo.src, await formatSource(fileInfo.source, path.extname(fileInfo.src)))
-        srcs.push(fileInfo.src)
-      })
-      const finalName = this.getFileName(assetName, iConcat.content)
-
-      // + hooks.afterConcat
-      let afterOption = {
-        dist: targetPath,
-        srcs: rMap[targetPath],
-        source: iConcat.content
+        // - concat
+        logger.groupEnd()
       }
-
-      afterOption = await iHooks.afterConcat.promise(afterOption)
-      // - hooks.afterConcat
-
-      // 添加 watch
-      this.addDependencies({
-        compilation,
-        srcs: afterOption.srcs
-      })
-
-      logger.info(
-        `${chalk.cyan(finalName)} <- [${srcs
-          .map((iPath) => chalk.green(path.relative(logContext, iPath)))
-          .join(', ')}]`
-      )
-      this.updateAssets({
-        compilation,
-        assetsInfo: {
-          src: assetName,
-          dist: finalName,
-          source: afterOption.source
-        }
-      })
     })
-
-    // - concat
-    logger.groupEnd()
-    done()
   }
 }
 

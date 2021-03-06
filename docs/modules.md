@@ -18,4 +18,4 @@
 
 Ƭ **FileInfo**: *Required*<AssetsInfo\>
 
-Defined in: [src/index.ts:18](https://github.com/jackness1208/yyl-concat-webpack-plugin/blob/5f91647/src/index.ts#L18)
+Defined in: src/index.ts:18

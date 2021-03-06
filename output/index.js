@@ -1,5 +1,5 @@
 /*!
- * yyl-concat-webpack-plugin cjs 1.0.9
+ * yyl-concat-webpack-plugin cjs 1.0.10
  * (c) 2020 - 2021 
  * Released under the MIT License.
  */
@@ -124,121 +124,124 @@ class YylConcatWebpackPlugin extends yylWebpackPluginBase.YylWebpackPluginBase {
             if (!fileMap || !Object.keys(fileMap).length) {
                 return;
             }
-            const { compilation, done } = yield this.initCompilation(compiler);
-            const logger = compilation.getLogger(PLUGIN_NAME);
-            logger.group(PLUGIN_NAME);
-            // + concat
-            const iHooks = getHooks(compilation);
-            const formatSource = function (cnt, ext) {
-                return __awaiter(this, void 0, void 0, function* () {
-                    if (!minify) {
-                        return cnt.toString();
-                    }
-                    if (ext === '.js') {
-                        try {
-                            const result = yield Terser.minify(cnt.toString(), {
-                                ie8
-                            });
-                            return result.code || '';
-                        }
-                        catch (er) {
-                            logger.error(LANG.UGLIFY_ERROR, er);
-                        }
-                        return cnt.toString();
-                    }
-                    else {
-                        return cnt.toString();
-                    }
-                });
-            };
-            // fileMap 格式化
-            const rMap = {};
-            Object.keys(fileMap).forEach((key) => {
-                if (context) {
-                    rMap[path__default['default'].resolve(context, key)] = fileMap[key].map((iPath) => path__default['default'].resolve(context, iPath));
-                }
-                else if (this.option.context) {
-                    rMap[path__default['default'].resolve(this.option.context, key)] = fileMap[key].map((iPath) => path__default['default'].resolve(this.option.context, iPath));
-                }
-            });
-            const rMapKeys = Object.keys(rMap);
-            if (rMapKeys.length) {
-                logger.info(`${LANG.MINIFY_INFO}: ${minify || 'false'}`);
-                logger.info(`${LANG.IE8_INFO}: ${ie8 || 'false'}`);
-                logger.info(`${LANG.BUILD_CONCAT}:`);
-            }
-            else {
-                logger.info(LANG.NO_CONCAT);
-            }
-            yield util__default['default'].forEach(rMapKeys, (targetPath) => __awaiter(this, void 0, void 0, function* () {
-                const assetName = util__default['default'].path.relative(output.path || '', targetPath);
-                const iConcat = new Concat__default['default'](true, targetPath, '\n');
-                const srcs = [];
-                yield util__default['default'].forEach(rMap[targetPath], (srcPath) => __awaiter(this, void 0, void 0, function* () {
-                    const assetKey = util__default['default'].path.relative(output.path || '', srcPath);
-                    if (path__default['default'].extname(assetKey) === '.js') {
-                        iConcat.add(null, `;/* ${path__default['default'].basename(assetKey)} */`);
-                    }
-                    else {
-                        iConcat.add(null, `/* ${path__default['default'].basename(assetKey)} */`);
-                    }
-                    let fileInfo = {
-                        src: '',
-                        dist: targetPath,
-                        source: Buffer.from('')
+            this.initCompilation({
+                compiler,
+                onProcessAssets: (compilation) => __awaiter(this, void 0, void 0, function* () {
+                    const logger = compilation.getLogger(PLUGIN_NAME);
+                    logger.group(PLUGIN_NAME);
+                    // + concat
+                    const iHooks = getHooks(compilation);
+                    const formatSource = function (cnt, ext) {
+                        return __awaiter(this, void 0, void 0, function* () {
+                            if (!minify) {
+                                return cnt.toString();
+                            }
+                            if (ext === '.js') {
+                                try {
+                                    const result = yield Terser.minify(cnt.toString(), {
+                                        ie8
+                                    });
+                                    return result.code || '';
+                                }
+                                catch (er) {
+                                    logger.error(LANG.UGLIFY_ERROR, er);
+                                }
+                                return cnt.toString();
+                            }
+                            else {
+                                return cnt.toString();
+                            }
+                        });
                     };
-                    if (this.assetMap[assetKey]) {
-                        fileInfo.src = path__default['default'].resolve(output.path || '', this.assetMap[assetKey]);
-                        fileInfo.source = Buffer.from(compilation.assets[this.assetMap[assetKey]].source().toString(), 'utf-8');
-                    }
-                    else if (fs__default['default'].existsSync(srcPath)) {
-                        fileInfo.src = srcPath;
-                        fileInfo.source = fs__default['default'].readFileSync(srcPath);
+                    // fileMap 格式化
+                    const rMap = {};
+                    Object.keys(fileMap).forEach((key) => {
+                        if (context) {
+                            rMap[path__default['default'].resolve(context, key)] = fileMap[key].map((iPath) => path__default['default'].resolve(context, iPath));
+                        }
+                        else if (this.option.context) {
+                            rMap[path__default['default'].resolve(this.option.context, key)] = fileMap[key].map((iPath) => path__default['default'].resolve(this.option.context, iPath));
+                        }
+                    });
+                    const rMapKeys = Object.keys(rMap);
+                    if (rMapKeys.length) {
+                        logger.info(`${LANG.MINIFY_INFO}: ${minify || 'false'}`);
+                        logger.info(`${LANG.IE8_INFO}: ${ie8 || 'false'}`);
+                        logger.info(`${LANG.BUILD_CONCAT}:`);
                     }
                     else {
-                        const finalName = this.getFileName(assetName, Buffer.from(''));
-                        const srcs = rMap[targetPath];
-                        logger.warn(`${chalk__default['default'].cyan(finalName)} ${chalk__default['default'].yellow('<x')} [${srcs
+                        logger.info(LANG.NO_CONCAT);
+                    }
+                    yield util__default['default'].forEach(rMapKeys, (targetPath) => __awaiter(this, void 0, void 0, function* () {
+                        const assetName = util__default['default'].path.relative(output.path || '', targetPath);
+                        const iConcat = new Concat__default['default'](true, targetPath, '\n');
+                        const srcs = [];
+                        yield util__default['default'].forEach(rMap[targetPath], (srcPath) => __awaiter(this, void 0, void 0, function* () {
+                            const assetKey = util__default['default'].path.relative(output.path || '', srcPath);
+                            if (path__default['default'].extname(assetKey) === '.js') {
+                                iConcat.add(null, `;/* ${path__default['default'].basename(assetKey)} */`);
+                            }
+                            else {
+                                iConcat.add(null, `/* ${path__default['default'].basename(assetKey)} */`);
+                            }
+                            let fileInfo = {
+                                src: '',
+                                dist: targetPath,
+                                source: Buffer.from('')
+                            };
+                            if (this.assetMap[assetKey]) {
+                                fileInfo.src = path__default['default'].resolve(output.path || '', this.assetMap[assetKey]);
+                                fileInfo.source = Buffer.from(compilation.assets[this.assetMap[assetKey]].source().toString(), 'utf-8');
+                            }
+                            else if (fs__default['default'].existsSync(srcPath)) {
+                                fileInfo.src = srcPath;
+                                fileInfo.source = fs__default['default'].readFileSync(srcPath);
+                            }
+                            else {
+                                const finalName = this.getFileName(assetName, Buffer.from(''));
+                                const srcs = rMap[targetPath];
+                                logger.warn(`${chalk__default['default'].cyan(finalName)} ${chalk__default['default'].yellow('<x')} [${srcs
+                                    .map((iPath) => chalk__default['default'].green(path__default['default'].relative(logContext, iPath)))
+                                    .join(', ')}]`);
+                                logger.warn(`-> ${LANG.PATH_NOT_EXITS}: ${srcPath}`);
+                                return;
+                            }
+                            // + hooks.beforeConcat
+                            fileInfo = yield iHooks.beforeConcat.promise(fileInfo);
+                            // - hooks.beforeConcat
+                            iConcat.add(fileInfo.src, yield formatSource(fileInfo.source, path__default['default'].extname(fileInfo.src)));
+                            srcs.push(fileInfo.src);
+                        }));
+                        const finalName = this.getFileName(assetName, iConcat.content);
+                        // + hooks.afterConcat
+                        let afterOption = {
+                            dist: targetPath,
+                            srcs: rMap[targetPath],
+                            source: iConcat.content
+                        };
+                        afterOption = yield iHooks.afterConcat.promise(afterOption);
+                        // - hooks.afterConcat
+                        // 添加 watch
+                        this.addDependencies({
+                            compilation,
+                            srcs: afterOption.srcs
+                        });
+                        logger.info(`${chalk__default['default'].cyan(finalName)} <- [${srcs
                             .map((iPath) => chalk__default['default'].green(path__default['default'].relative(logContext, iPath)))
                             .join(', ')}]`);
-                        logger.warn(`-> ${LANG.PATH_NOT_EXITS}: ${srcPath}`);
-                        return;
-                    }
-                    // + hooks.beforeConcat
-                    fileInfo = yield iHooks.beforeConcat.promise(fileInfo);
-                    // - hooks.beforeConcat
-                    iConcat.add(fileInfo.src, yield formatSource(fileInfo.source, path__default['default'].extname(fileInfo.src)));
-                    srcs.push(fileInfo.src);
-                }));
-                const finalName = this.getFileName(assetName, iConcat.content);
-                // + hooks.afterConcat
-                let afterOption = {
-                    dist: targetPath,
-                    srcs: rMap[targetPath],
-                    source: iConcat.content
-                };
-                afterOption = yield iHooks.afterConcat.promise(afterOption);
-                // - hooks.afterConcat
-                // 添加 watch
-                this.addDependencies({
-                    compilation,
-                    srcs: afterOption.srcs
-                });
-                logger.info(`${chalk__default['default'].cyan(finalName)} <- [${srcs
-                    .map((iPath) => chalk__default['default'].green(path__default['default'].relative(logContext, iPath)))
-                    .join(', ')}]`);
-                this.updateAssets({
-                    compilation,
-                    assetsInfo: {
-                        src: assetName,
-                        dist: finalName,
-                        source: afterOption.source
-                    }
-                });
-            }));
-            // - concat
-            logger.groupEnd();
-            done();
+                        this.updateAssets({
+                            compilation,
+                            assetsInfo: {
+                                src: assetName,
+                                dist: finalName,
+                                source: afterOption.source
+                            }
+                        });
+                    }));
+                    // - concat
+                    logger.groupEnd();
+                })
+            });
         });
     }
 }
