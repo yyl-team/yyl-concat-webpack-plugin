@@ -1,5 +1,5 @@
 /*!
- * yyl-concat-webpack-plugin cjs 1.0.10
+ * yyl-concat-webpack-plugin cjs 1.0.11
  * (c) 2020 - 2021 
  * Released under the MIT License.
  */
