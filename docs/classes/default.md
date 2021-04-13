@@ -47,7 +47,7 @@ Name | Type |
 
 **Returns:** [*default*](default.md)
 
-Defined in: src/index.ts:50
+Defined in: [src/index.ts:50](https://github.com/jackness1208/yyl-concat-webpack-plugin/blob/6467e95/src/index.ts#L50)
 
 ## Properties
 
@@ -97,7 +97,7 @@ ___
 
 配置
 
-Defined in: src/index.ts:43
+Defined in: [src/index.ts:43](https://github.com/jackness1208/yyl-concat-webpack-plugin/blob/6467e95/src/index.ts#L43)
 
 ## Methods
 
@@ -131,7 +131,7 @@ Name | Type |
 
 **Returns:** *Promise*<*void*\>
 
-Defined in: src/index.ts:87
+Defined in: [src/index.ts:87](https://github.com/jackness1208/yyl-concat-webpack-plugin/blob/6467e95/src/index.ts#L87)
 
 ___
 
@@ -223,7 +223,7 @@ Name | Type |
 
 **Returns:** *any*
 
-Defined in: src/index.ts:33
+Defined in: [src/index.ts:33](https://github.com/jackness1208/yyl-concat-webpack-plugin/blob/6467e95/src/index.ts#L33)
 
 ___
 
@@ -235,4 +235,4 @@ hooks 用 获取组件名字
 
 **Returns:** *string*
 
-Defined in: src/index.ts:38
+Defined in: [src/index.ts:38](https://github.com/jackness1208/yyl-concat-webpack-plugin/blob/6467e95/src/index.ts#L38)
